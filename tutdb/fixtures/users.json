@@ -1,0 +1,47 @@
+[
+    {
+        "email": "user1@example.com",
+        "first_name": "John",
+        "last_name": "Doe",
+        "password": "password1",
+        "level": "Intermediate",
+        "faculty": "Science",
+        "department": "Physics"
+    },
+    {
+        "email": "user2@example.com",
+        "first_name": "Jane",
+        "last_name": "Smith",
+        "password": "password2",
+        "level": "Beginner",
+        "faculty": "Arts",
+        "department": "English"
+    },
+    {
+        "email": "user3@example.com",
+        "first_name": "Alice",
+        "last_name": "Johnson",
+        "password": "password3",
+        "level": "Advanced",
+        "faculty": "Engineering",
+        "department": "Mechanical"
+    },
+    {
+        "email": "user4@example.com",
+        "first_name": "Bob",
+        "last_name": "Wilson",
+        "password": "password4",
+        "level": "Intermediate",
+        "faculty": "Business",
+        "department": "Marketing"
+    },
+    {
+        "email": "user5@example.com",
+        "first_name": "Eva",
+        "last_name": "Brown",
+        "password": "password5",
+        "level": "Advanced",
+        "faculty": "Science",
+        "department": "Chemistry"
+    }
+]

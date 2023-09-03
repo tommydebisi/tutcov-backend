@@ -1,0 +1,15 @@
+version: "3.1"
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+    -
+      5432:5432
+    restart: always
+    # set the volumes to store the data
+    volumes:
+    -
+      /data/postgres-data:/var/lib/postgresql/data
