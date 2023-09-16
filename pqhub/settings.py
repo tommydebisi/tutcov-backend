@@ -9,10 +9,11 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from decouple import config
 from datetime import timedelta
 from pathlib import Path
 from os import getenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -96,9 +97,9 @@ DATABASES = {
     # db for postgresql
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': getenv('DB_NAME'), # name of db
-        'USER': getenv('DB_USER'), # user of db
-        'PASSWORD': getenv('DB_PASSWORD'), # password of db
+        'NAME': config('DB_NAME'), # name of db
+        'USER': config('DB_USER'), # user of db
+        'PASSWORD': config('DB_PASSWORD'), # password of db
         'HOST': 'localhost',
         'PORT': '5432',
     },
@@ -152,8 +153,8 @@ EMAIL_HOST = 'smtp.gmail.com'  # Specify your SMTP server
 EMAIL_PORT = 587  # Port for sending emails (use 587 for TLS, 465 for SSL)
 EMAIL_USE_TLS = True  # Use TLS (True/False based on your email provider)
 EMAIL_USE_SSL = False  # Use SSL (True/False based on your email provider)
-EMAIL_HOST_USER = getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = getenv('EMAIL_HOST_USER')  # Sender's email address
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER')  # Sender's email address
 
 APPEND_SLASH=False

@@ -20,6 +20,7 @@ class PersonalInfoRegistrationView(APIView):
         if serializer.is_valid():
             # Generate a unique token and store it in the user's session
             # TODO: implement number token, length of 6
+            # TODO: implement token expiration with redis
             token = get_random_string(length=32)
             request.session['registration_token'] = token
             request.session['personal_info'] = serializer.validated_data
@@ -66,6 +67,7 @@ class SchoolInfoRegistrationView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+from django.contrib import auth
 
 class UserLoginView(APIView):
     def post(self, request, format=None):
@@ -75,7 +77,8 @@ class UserLoginView(APIView):
             print(request.data)
             email = request.data['email']
             password = request.data['password']
-            user = authenticate(request, username=email, password=password)
+            current_user = User.objects.get(email=email)
+            user = auth.login(request, current_user)
 
             if user is not None:
                 # User is valid, create access and refresh tokens
