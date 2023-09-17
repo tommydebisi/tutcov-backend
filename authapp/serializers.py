@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
+
 from tutdb.models import User
+from pqhub.backends import CustomUserModelBackend
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -30,6 +32,20 @@ class SchoolInfoSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-    class Meta:
-        model = User
-        fields = ('email', 'password')
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        email = data.get("email", "")
+        password = data.get("password", "")
+
+        if email and password:
+            # created a custom authentication method in backends.py
+            custom_auth = CustomUserModelBackend()
+            user = custom_auth.authenticate(self.context.get("request"), email=email, password=password)
+            if user:
+                return user
+            else:
+                raise serializers.ValidationError("Invalid credentials")
+        else:
+            raise serializers.ValidationError("Must include 'email' and 'password'")

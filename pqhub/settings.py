@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from decouple import config
 from datetime import timedelta
 from pathlib import Path
-from os import getenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -49,6 +48,12 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+
+AUTHENTICATION_BACKENDS = [
+    'pqhub.backends.CustomUserModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
@@ -103,6 +108,17 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
     },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        # format: redis://redis-container-name:port/db-number
+        "LOCATION": "redis://localhost:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
 }
 
 
