@@ -4,4 +4,11 @@ from django.contrib import admin
 from .models import User, Token
 
 admin.site.register(User)
-admin.site.register(Token)
+
+
+class TokenAdmin(admin.ModelAdmin):
+    list_display = ["user", "created_at", "access_token_expires_at"]
+    list_filter = ["user"]
+
+
+admin.site.register(Token, TokenAdmin)

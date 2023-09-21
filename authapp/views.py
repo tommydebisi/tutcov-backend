@@ -142,6 +142,7 @@ class UserLoginView(APIView):
             print(serializer.validated_data)
             user = serializer.validated_data
 
+            my_user = User.objects.get(first_name=user)
 
             if user is not None:
                 # User is valid, create access and refresh tokens
@@ -176,16 +177,22 @@ class UserLogoutView(APIView):
     def post(self, request, format=None):
         # Get the access token from the Authorization header
         auth_header = request.META.get('HTTP_AUTHORIZATION')
+        # print(auth_header)
         if auth_header and auth_header.startswith('Bearer '):
             access_token = auth_header[len('Bearer '):]
+            # print(access_token)
             access_token_obj = AccessToken(access_token)
+            # print("access_token_obj", access_token_obj)
+            # print(request.user)
 
             # Check if the access token is associated with the current user
-            if access_token_obj['user_id'] == str(request.user.id):
+            # if access_token_obj['user_id'] == str(request.user.id):
                 # Delete the CustomToken model associated with the current user
-                custom_token = CustomToken.objects.filter(user=request.user).first()
-                if custom_token:
-                    custom_token.delete()
+            user_instance = User.objects.get(username=request.user)
+            print(user_instance)
+            custom_token = CustomToken.objects.filter(user=user_instance).first()
+            if custom_token:
+                custom_token.delete()
 
                 return Response({'message': 'User successfully logged out'}, status=status.HTTP_200_OK)
 
