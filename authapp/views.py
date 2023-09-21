@@ -142,7 +142,6 @@ class UserLoginView(APIView):
             print(serializer.validated_data)
             user = serializer.validated_data
 
-            my_user = User.objects.get(first_name=user)
 
             if user is not None:
                 # User is valid, create access and refresh tokens
