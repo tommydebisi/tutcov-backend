@@ -111,6 +111,7 @@ class SchoolInfoRegistrationView(APIView):
 
         # Get the OTP from the request and compare it with the cached OTP
         otp_provided = request.data.get('otp')
+        print(otp_provided)
         otp_cached = cache.get(f"otp_{stored_token}")
 
         if not otp_provided or otp_provided != otp_cached:
