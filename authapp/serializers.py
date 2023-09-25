@@ -43,6 +43,7 @@ class UserLoginSerializer(serializers.Serializer):
             # created a custom authentication method in backends.py
             custom_auth = CustomUserModelBackend()
             user = custom_auth.authenticate(self.context.get("request"), email=email, password=password)
+            # print("user2", user)
             if user:
                 return user
             else:

@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.utils.crypto import get_random_string
@@ -14,6 +14,7 @@ from .serializers import (
     UserRegistrationSerializer, SchoolInfoSerializer, UserLoginSerializer
     )
 from datetime import timedelta
+from django.utils import timezone
 
 class PersonalInfoRegistrationView(APIView):
     """
@@ -140,18 +141,19 @@ class UserLoginView(APIView):
         serializer = UserLoginSerializer(data=request.data, context={"request": request})
 
         if serializer.is_valid():
-            print(serializer.validated_data)
+            # print(serializer.validated_data)
             user = serializer.validated_data
+            # print("user3", user)
 
-            my_user = User.objects.get(first_name=user)
+            my_user = User.objects.get(email=user)
 
             if user is not None:
                 # User is valid, create access and refresh tokens
                 refresh = RefreshToken.for_user(user)
                 access_token = AccessToken.for_user(user)
 
-                print(refresh)
-                print(access_token)
+                # print(refresh)
+                # print(access_token)
 
                 # Store tokens in CustomToken model
                 custom_token, _ = CustomToken.objects.get_or_create(user=my_user)
@@ -173,10 +175,13 @@ class UserLoginView(APIView):
 
 
 class UserLogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, format=None):
         # Get the access token from the Authorization header
+        print(request.META)
+        print(request.user.email)
+        # print("Headers", request.META.get('HTTP_AUTHORIZATION'))
         auth_header = request.META.get('HTTP_AUTHORIZATION')
         # print(auth_header)
         if auth_header and auth_header.startswith('Bearer '):
@@ -189,7 +194,7 @@ class UserLogoutView(APIView):
             # Check if the access token is associated with the current user
             # if access_token_obj['user_id'] == str(request.user.id):
                 # Delete the CustomToken model associated with the current user
-            user_instance = User.objects.get(username=request.user)
+            user_instance = User.objects.get(email=request.user.email)
             print(user_instance)
             custom_token = CustomToken.objects.filter(user=user_instance).first()
             if custom_token:
@@ -209,9 +214,12 @@ class TokenResetView(APIView):
         auth_header = request.META.get('HTTP_AUTHORIZATION')
         if auth_header and auth_header.startswith('Bearer '):
             access_token = auth_header[len('Bearer '):]
+            print(request.user)
 
             # Check if the access token is associated with the current user
-            custom_token = CustomToken.objects.filter(user=request.user, access_token=access_token).first()
+            current_user = User.objects.get(email=request.user.email)
+            custom_token = CustomToken.objects.filter(user=current_user, access_token=access_token).first()
+            print(custom_token)
             if custom_token:
                 # Generate a new access token based on the refresh token
                 refresh_token = RefreshToken(custom_token.refresh_token)
@@ -219,7 +227,10 @@ class TokenResetView(APIView):
 
                 # Update the CustomToken model with the new access token
                 custom_token.access_token = str(new_access_token)
-                custom_token.access_token_expires_at = new_access_token['exp']
+                # print(custom_token.access_token)
+                print(new_access_token)
+                # custom_token.access_token_expires_at = new_access_token['exp']
+                custom_token.access_token_expires_at = timezone.now() + timedelta(minutes=30)
                 custom_token.save()
 
                 # Return the newly created access token in the response
