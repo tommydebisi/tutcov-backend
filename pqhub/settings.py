@@ -146,7 +146,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+
+TIME_ZONE = 'Africa/Lagos'
+
 
 USE_I18N = True
 
@@ -164,13 +167,18 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Mail settings for smtp
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # Specify your SMTP server
-EMAIL_PORT = 587  # Port for sending emails (use 587 for TLS, 465 for SSL)
-EMAIL_USE_TLS = True  # Use TLS (True/False based on your email provider)
-EMAIL_USE_SSL = False  # Use SSL (True/False based on your email provider)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER')  # Sender's email address
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'  # Specify your SMTP server
+# EMAIL_PORT = 587  # Port for sending emails (use 587 for TLS, 465 for SSL)
+# EMAIL_USE_TLS = True  # Use TLS (True/False based on your email provider)
+# EMAIL_USE_SSL = False  # Use SSL (True/False based on your email provider)
+# EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER')  # Sender's email address
 
-APPEND_SLASH=False
+# APPEND_SLASH=False
+
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+SENDGRID_API_KEY = config("NEW_SENDGRID_API_KEY")

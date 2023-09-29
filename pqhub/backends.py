@@ -4,10 +4,11 @@ from tutdb.models import User
 
 class CustomUserModelBackend(ModelBackend):
     def authenticate(self, request, email=None, password=None, **kwargs):
-        User = get_user_model()
+        # User = get_user_model()
 
         # Try to find a user matching the email (instead of email)
         users = User.objects.filter(email=email)
+        # print(users)
 
         if not users.exists():
             print("User does not exist")

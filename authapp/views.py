@@ -2,17 +2,19 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.utils.crypto import get_random_string
 from django.core.mail import send_mail, BadHeaderError
 from django.core.cache import cache  # import Django's cache
-
+from pqhub.settings import DEFAULT_FROM_EMAIL
 from tutdb.models import User, Token as CustomToken
 from .serializers import (
     UserRegistrationSerializer, SchoolInfoSerializer, UserLoginSerializer
     )
+from datetime import timedelta
+from django.utils import timezone
 
 class PersonalInfoRegistrationView(APIView):
     """
@@ -51,30 +53,45 @@ class PersonalInfoRegistrationView(APIView):
                 return Response({'error': 'Failed to send email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def send_registration_email(self, otp_token, email) -> bool:
-        """
-        Send a registration confirmation email with the OTP token.
+    # def send_registration_email(self, otp_token, email) -> bool:
+    #     """
+    #     Send a registration confirmation email with the OTP token.
 
-        Args:
-            otp_token (str): The OTP token.
-            email (str): The user's email address.
+    #     Args:
+    #         otp_token (str): The OTP token.
+    #         email (str): The user's email address.
 
-        Returns:
-            bool: True if the email was sent successfully, False otherwise.
-        """
+    #     Returns:
+    #         bool: True if the email was sent successfully, False otherwise.
+    #     """
+    #     try:
+    #         send_mail(
+    #             'Registration Confirmation',
+    #             f'Your registration token is: {otp_token}\n\nPlease enter this token in the next step of the registration process.\
+    #                 \n\nIf you did not request this token, please ignore this email. \
+    #                 \n\nThank you,\nTUTCOV TEAM',
+    #             'TUTCOV TEAM',
+    #             settings.DEFAULT_FROM_EMAIL,
+    #             [email],
+    #             fail_silently=False,
+    #         )
+    #         return True
+    #     except BadHeaderError:
+    #         return False
+
+        
+    def send_registration_email(self, otp_token, email):
         try:
             send_mail(
                 'Registration Confirmation',
-                f'Your registration token is: {otp_token}\n\nPlease enter this token in the next step of the registration process.\
-                    \n\nIf you did not request this token, please ignore this email. \
-                    \n\nThank you,\nTUTCOV TEAM',
-                'TUTCOV TEAM',
+                f'Your registration token is: {otp_token}',
+                settings.DEFAULT_FROM_EMAIL,
                 [email],
                 fail_silently=False,
             )
-            return True
+            return True  # Email sent successfully
         except BadHeaderError:
-            return False
+            return False  # Email sending failed
 
 
 class SchoolInfoRegistrationView(APIView):
@@ -95,6 +112,7 @@ class SchoolInfoRegistrationView(APIView):
 
         # Get the OTP from the request and compare it with the cached OTP
         otp_provided = request.data.get('otp')
+        print(otp_provided)
         otp_cached = cache.get(f"otp_{stored_token}")
 
         if not otp_provided or otp_provided != otp_cached:
@@ -123,7 +141,10 @@ class UserLoginView(APIView):
         serializer = UserLoginSerializer(data=request.data, context={"request": request})
 
         if serializer.is_valid():
+            # print(serializer.validated_data)
             user = serializer.validated_data
+
+            my_user = User.objects.get(email=user)
 
             if user is not None:
                 # User is valid, create access and refresh tokens
@@ -131,11 +152,10 @@ class UserLoginView(APIView):
                 access_token = AccessToken.for_user(user)
 
                 # Store tokens in CustomToken model
-                custom_token, _ = CustomToken.objects.get_or_create(user=user)
+                custom_token, _ = CustomToken.objects.get_or_create(user=my_user)
                 custom_token.access_token = str(access_token)
                 custom_token.refresh_token = str(refresh)
-                custom_token.access_token_expires_at = access_token['exp']
-                custom_token.refresh_token_expires_at = refresh['exp']
+
                 custom_token.save()
 
                 return Response({
@@ -147,7 +167,7 @@ class UserLoginView(APIView):
 
 
 class UserLogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, format=None):
         # Get the access token from the Authorization header
@@ -157,11 +177,10 @@ class UserLogoutView(APIView):
             access_token_obj = AccessToken(access_token)
 
             # Check if the access token is associated with the current user
-            if access_token_obj['user_id'] == str(request.user.id):
-                # Delete the CustomToken model associated with the current user
-                custom_token = CustomToken.objects.filter(user=request.user).first()
-                if custom_token:
-                    custom_token.delete()
+            user_instance = User.objects.get(email=request.user.email)
+            custom_token = CustomToken.objects.filter(user=user_instance).first()
+            if custom_token:
+                custom_token.delete()
 
                 return Response({'message': 'User successfully logged out'}, status=status.HTTP_200_OK)
 
@@ -177,9 +196,12 @@ class TokenResetView(APIView):
         auth_header = request.META.get('HTTP_AUTHORIZATION')
         if auth_header and auth_header.startswith('Bearer '):
             access_token = auth_header[len('Bearer '):]
+            print(request.user)
 
             # Check if the access token is associated with the current user
-            custom_token = CustomToken.objects.filter(user=request.user, access_token=access_token).first()
+            current_user = User.objects.get(email=request.user.email)
+            custom_token = CustomToken.objects.filter(user=current_user, access_token=access_token).first()
+            print(custom_token)
             if custom_token:
                 # Generate a new access token based on the refresh token
                 refresh_token = RefreshToken(custom_token.refresh_token)
@@ -187,7 +209,7 @@ class TokenResetView(APIView):
 
                 # Update the CustomToken model with the new access token
                 custom_token.access_token = str(new_access_token)
-                custom_token.access_token_expires_at = new_access_token['exp']
+                custom_token.access_token_expires_at = timezone.now() + timedelta(minutes=30)
                 custom_token.save()
 
                 # Return the newly created access token in the response

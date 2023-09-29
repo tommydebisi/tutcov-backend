@@ -1,14 +1,16 @@
 # myapp/models.py
-from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from .managers import UserManager
+from .managers import UserManager
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
-
+from datetime import timedelta
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    username = models.CharField(max_length=30, unique=True, default="None")
+    username = models.CharField(max_length=30, unique=True) # I  removed the default
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     level = models.CharField(max_length=50, blank=True)
@@ -85,8 +87,17 @@ class Token(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     access_token = models.CharField(max_length=255)
     refresh_token = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
     access_token_expires_at = models.DateTimeField()
     refresh_token_expires_at = models.DateTimeField()
+
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            # If the instance is being created (not updated), set expired_at to 30 minutes from now.
+            self.access_token_expires_at = timezone.now() + timedelta(minutes=30)
+            self.refresh_token_expires_at = timezone.now() + timedelta(hours=12)
+        super(Token, self).save(*args, **kwargs)
 
     def is_access_token_expired(self):
         return timezone.now() >= self.access_token_expires_at
