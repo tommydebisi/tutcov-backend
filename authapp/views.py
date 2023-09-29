@@ -3,12 +3,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.permissions import IsAuthenticated, AllowAny
+
 from django.conf import settings
-from django.contrib.auth import authenticate
 from django.utils.crypto import get_random_string
 from django.core.mail import send_mail, BadHeaderError
 from django.core.cache import cache  # import Django's cache
-from pqhub.settings import DEFAULT_FROM_EMAIL
+
 from tutdb.models import User, Token as CustomToken
 from .serializers import (
     UserRegistrationSerializer, SchoolInfoSerializer, UserLoginSerializer
@@ -33,9 +33,9 @@ class PersonalInfoRegistrationView(APIView):
         # Validate user registration data
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
-            # Generate unique tokens for user and OTP
+            # Generate unique tokens for user and OTP (length=5)
             u_id = get_random_string(length=32)
-            otp_token = get_random_string(length=6, allowed_chars='1234567890')
+            otp_token = get_random_string(length=5, allowed_chars='1234567890')
 
             # Cache the OTP token in Redis with a 5-minute expiration time
             cache.set(f"otp_{u_id}", otp_token, timeout=300)
@@ -53,45 +53,31 @@ class PersonalInfoRegistrationView(APIView):
                 return Response({'error': 'Failed to send email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # def send_registration_email(self, otp_token, email) -> bool:
-    #     """
-    #     Send a registration confirmation email with the OTP token.
+    def send_registration_email(self, otp_token, email) -> bool:
+        """
+        Send a registration confirmation email with the OTP token.
 
-    #     Args:
-    #         otp_token (str): The OTP token.
-    #         email (str): The user's email address.
+        Args:
+            otp_token (str): The OTP token.
+            email (str): The user's email address.
 
-    #     Returns:
-    #         bool: True if the email was sent successfully, False otherwise.
-    #     """
-    #     try:
-    #         send_mail(
-    #             'Registration Confirmation',
-    #             f'Your registration token is: {otp_token}\n\nPlease enter this token in the next step of the registration process.\
-    #                 \n\nIf you did not request this token, please ignore this email. \
-    #                 \n\nThank you,\nTUTCOV TEAM',
-    #             'TUTCOV TEAM',
-    #             settings.DEFAULT_FROM_EMAIL,
-    #             [email],
-    #             fail_silently=False,
-    #         )
-    #         return True
-    #     except BadHeaderError:
-    #         return False
-
-        
-    def send_registration_email(self, otp_token, email):
+        Returns:
+            bool: True if the email was sent successfully, False otherwise.
+        """
         try:
             send_mail(
                 'Registration Confirmation',
-                f'Your registration token is: {otp_token}',
+                f'Your registration token is: {otp_token}\n\nPlease enter this token in the next step of the registration process.\
+                    \n\nIf you did not request this token, please ignore this email. \
+                    \n\nThank you,\nTUTCOV TEAM',
+                'TUTCOV TEAM',
                 settings.DEFAULT_FROM_EMAIL,
                 [email],
                 fail_silently=False,
             )
-            return True  # Email sent successfully
+            return True
         except BadHeaderError:
-            return False  # Email sending failed
+            return False
 
 
 class SchoolInfoRegistrationView(APIView):
