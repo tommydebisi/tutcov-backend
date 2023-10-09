@@ -53,31 +53,44 @@ class PersonalInfoRegistrationView(APIView):
                 return Response({'error': 'Failed to send email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def send_registration_email(self, otp_token, email) -> bool:
-        """
-        Send a registration confirmation email with the OTP token.
+    # def send_registration_email(self, otp_token, email) -> bool:
+    #     """
+    #     Send a registration confirmation email with the OTP token.
 
-        Args:
-            otp_token (str): The OTP token.
-            email (str): The user's email address.
+    #     Args:
+    #         otp_token (str): The OTP token.
+    #         email (str): The user's email address.
 
-        Returns:
-            bool: True if the email was sent successfully, False otherwise.
-        """
+    #     Returns:
+    #         bool: True if the email was sent successfully, False otherwise.
+    #     """
+    #     try:
+    #         send_mail(
+    #             'Registration Confirmation',
+    #             f'Your registration token is: {otp_token}\n\nPlease enter this token in the next step of the registration process.\
+    #                 \n\nIf you did not request this token, please ignore this email. \
+    #                 \n\nThank you,\nTUTCOV TEAM',
+    #             'TUTCOV TEAM',
+    #             settings.DEFAULT_FROM_EMAIL,
+    #             [email],
+    #             fail_silently=False,
+    #         )
+    #         return True
+    #     except BadHeaderError:
+    #         return False
+
+    def send_registration_email(self, otp_token, email):
         try:
             send_mail(
                 'Registration Confirmation',
-                f'Your registration token is: {otp_token}\n\nPlease enter this token in the next step of the registration process.\
-                    \n\nIf you did not request this token, please ignore this email. \
-                    \n\nThank you,\nTUTCOV TEAM',
-                'TUTCOV TEAM',
+                f'Your registration token is: {otp_token}',
                 settings.DEFAULT_FROM_EMAIL,
                 [email],
                 fail_silently=False,
             )
-            return True
+            return True  # Email sent successfully
         except BadHeaderError:
-            return False
+            return False  # Email sending failed
 
 
 class SchoolInfoRegistrationView(APIView):
@@ -141,6 +154,8 @@ class UserLoginView(APIView):
                 custom_token, _ = CustomToken.objects.get_or_create(user=my_user)
                 custom_token.access_token = str(access_token)
                 custom_token.refresh_token = str(refresh)
+                custom_token.access_token_expires_at = timezone.now() + timedelta(minutes=30)
+                custom_token.refresh_token_expires_at = timezone.now() + timedelta(hours=12)
 
                 custom_token.save()
 
@@ -180,12 +195,16 @@ class TokenResetView(APIView):
     def post(self, request, format=None):
         # Get the access token from the Authorization header
         auth_header = request.META.get('HTTP_AUTHORIZATION')
+        # print(auth_header)
         if auth_header and auth_header.startswith('Bearer '):
             access_token = auth_header[len('Bearer '):]
-            print(request.user)
+            # print("access_token", access_token)
+            # print(request.user)
 
             # Check if the access token is associated with the current user
+            print("emaiaiaa" ,request.user.email)
             current_user = User.objects.get(email=request.user.email)
+            print("current_user", current_user)
             custom_token = CustomToken.objects.filter(user=current_user, access_token=access_token).first()
             print(custom_token)
             if custom_token:
