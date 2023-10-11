@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'tutdb',
     'authapp',
+    'chat',
+    'channels',
     'rest_framework',
 ]
 
@@ -48,6 +50,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+
+ASGI_APPLICATION = 'pqhub.asgi.application'
+
 
 AUTHENTICATION_BACKENDS = [
     'pqhub.backends.CustomUserModelBackend',
@@ -121,6 +126,15 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
     }
+}
+
+CHANNEL_LAYERS = {
+    'default': {
+    'BACKEND': 'channels_redis.core.RedisChannelLayer',
+    'CONFIG': {
+    'hosts': [('127.0.0.1', 6379)],
+    },
+    },
 }
 
 
