@@ -1,12 +1,25 @@
 # myapp/models.py
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import UserManager
+import uuid
 from .managers import UserManager
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import timedelta
+import random
+import string
+
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
