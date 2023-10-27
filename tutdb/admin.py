@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User, Token
+from .models import User, Token, Department
 
 admin.site.register(User)
 
@@ -11,3 +11,10 @@ class TokenAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Token, TokenAdmin)
+
+
+class DepartmentAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("name",)}
+
+
+admin.site.register(Department, DepartmentAdmin)
