@@ -22,7 +22,7 @@ admin.site.register(Department, DepartmentAdmin)
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ['question']
+    list_display = ['question', 'question_number']
     list_filter = ['question']
     search_fields = ['question', 'question_number']
     list_editable = ['question_number']
