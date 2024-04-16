@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("accounts/", include("authapp.urls")),
     path('chat/', include('chat.urls', namespace='chat')),
+    path("questions/", include("tutdb.urls"))
 ]
 
 
