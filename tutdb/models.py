@@ -125,13 +125,11 @@ class Token(models.Model):
 class Question(models.Model):
     question = models.CharField(max_length=255)
     image = models.ImageField(upload_to="question_images", blank=True, null=True)
-    OPTION_CHOICES = (
-        ('Option 1', 'Option 1'),
-        ('Option 2', 'Option 2'),
-        ('Option 3', 'Option 3'),
-        ('Option 4', 'Option 4'),
-    )
-    options = models.CharField(max_length=50, choices=OPTION_CHOICES)
+    image_url = models.URLField(blank=True, null=True)
+    option_1 = models.CharField(max_length=100)
+    option_2 = models.CharField(max_length=100)
+    option_3 = models.CharField(max_length=100)
+    option_4 = models.CharField(max_length=100)
     picked_answer = models.CharField(max_length=1, blank=True)
     answer = models.CharField(max_length=1)
     question_number = models.IntegerField()

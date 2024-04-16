@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User, Token, Department
+from .models import User, Token, Department, Question
 
 admin.site.register(User)
 
@@ -18,3 +18,11 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Department, DepartmentAdmin)
+
+
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ['question']
+    list_filter = ['question']
+    search_fields = ['question', 'question_number']
+    list_editable = ['question_number']
