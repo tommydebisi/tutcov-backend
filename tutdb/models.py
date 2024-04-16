@@ -118,3 +118,21 @@ class Token(models.Model):
 
     def is_refresh_token_expired(self):
         return timezone.now() >= self.refresh_token_expires_at
+    
+
+
+
+class Question(models.Model):
+    question = models.CharField(max_length=255)
+    image = models.ImageField(upload_to="question_images", blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True)
+    option_1 = models.CharField(max_length=100)
+    option_2 = models.CharField(max_length=100)
+    option_3 = models.CharField(max_length=100)
+    option_4 = models.CharField(max_length=100)
+    picked_answer = models.CharField(max_length=1, blank=True)
+    answer = models.CharField(max_length=1)
+    question_number = models.IntegerField()
+
+    def __str__(self):
+        return self.question
