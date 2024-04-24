@@ -5,9 +5,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_spectacular.utils import extend_schema
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 
 
 class QuestionListApiView(APIView):
+    permission_classes = [AllowAny]
     serializer_class = QuestionSerializer
     # @swagger_auto_schema(operation_description="Displays all questions available in the system.")
     @extend_schema(responses=QuestionSerializer, description="Displays all questions available in the system.")
@@ -15,3 +17,11 @@ class QuestionListApiView(APIView):
         all_questions = Question.objects.all()
         serializer = QuestionSerializer(all_questions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class QuestionDetailAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = QuestionSerializer
+
+    def get():
+        pass

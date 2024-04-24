@@ -1,0 +1,50 @@
+[
+{
+  "model": "tutdb.question",
+  "pk": 1,
+  "fields": {
+    "question": "Django is a Python-based ____.",
+    "image": "",
+    "image_url": null,
+    "option_1": "web framework",
+    "option_2": "video creating tool",
+    "option_3": "analysis tool",
+    "option_4": "desktop development platform",
+    "picked_answer": "",
+    "answer": "A",
+    "question_number": 1
+  }
+},
+{
+  "model": "tutdb.question",
+  "pk": 2,
+  "fields": {
+    "question": "Django is maintained by which organization/company?",
+    "image": "",
+    "image_url": null,
+    "option_1": "Oracle",
+    "option_2": "Microsoft Corporation",
+    "option_3": "Python Software Foundation",
+    "option_4": "Django Software Foundation",
+    "picked_answer": "",
+    "answer": "D",
+    "question_number": 2
+  }
+},
+{
+  "model": "tutdb.question",
+  "pk": 3,
+  "fields": {
+    "question": "What does MTV stand for in Django?",
+    "image": "",
+    "image_url": null,
+    "option_1": "model–template–views",
+    "option_2": "make–test–views",
+    "option_3": "model–template–verify",
+    "option_4": "mobile–template–verification",
+    "picked_answer": "",
+    "answer": "A",
+    "question_number": 3
+  }
+}
+]
