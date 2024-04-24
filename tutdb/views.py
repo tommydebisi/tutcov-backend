@@ -1,12 +1,11 @@
-from tutdb.api.serializers import QuestionSerializer
+from tutdb.api.serializers import QuestionSerializer, QuestionDetailSerializer, OptionsSerializer
 from .models import Question
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_spectacular.utils import extend_schema
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
-
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, IsAuthenticated
 
 class QuestionListApiView(APIView):
     permission_classes = [AllowAny]
@@ -20,8 +19,23 @@ class QuestionListApiView(APIView):
     
 
 class QuestionDetailAPIView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated]
+    serializer_class = QuestionDetailSerializer
 
-    def get():
-        pass
+    def get(self, request, uuid, format=None):
+        question = Question.objects.get(uuid=uuid)
+        serializer = QuestionDetailSerializer(question)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    def put(self, request, uuid, format=None):
+        score = 0 
+        question = Question.objects.get(uuid=uuid)
+        serializer = OptionsSerializer(question, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        picked_answer = serializer.validated_data['answer']
+        if picked_answer == question.answer:
+            score += 1
+
+        return Response({"Sucess": "Answer Saved",
+                         "score": score}, status=status.HTTP_200_OK)

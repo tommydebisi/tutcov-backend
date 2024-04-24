@@ -133,7 +133,7 @@ class Question(models.Model):
     picked_answer = models.CharField(max_length=1, blank=True)
     answer = models.CharField(max_length=1)
     question_number = models.IntegerField()
-    # uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
         return self.question
