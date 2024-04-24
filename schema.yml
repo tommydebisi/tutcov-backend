@@ -1,0 +1,334 @@
+openapi: 3.0.3
+info:
+  title: TUTCOV API Project
+  version: 1.0.0
+  description: A comprehensive documentation on all endpoints in tutcov
+paths:
+  /accounts/login/:
+    post:
+      operationId: accounts_login_create
+      description: Generates access and refresh tokens for a user
+      tags:
+      - accounts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLogin'
+          description: ''
+  /accounts/logout/:
+    post:
+      operationId: accounts_logout_create
+      tags:
+      - accounts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /accounts/personal-info/:
+    post:
+      operationId: accounts_personal_info_create
+      description: 'View for handling user registration and email confirmation.POST:
+        Registers a user, generates and sends an OTP token via email.Args:request
+        (Request): The HTTP request object.format (str, optional): The format of the
+        response. Returns:Response: HTTP response with status and data.'
+      tags:
+      - accounts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegistration'
+          description: ''
+  /accounts/school-info/:
+    post:
+      operationId: accounts_school_info_create
+      description: 'View for handling school information registration.POST: Registers
+        a user with school information after OTP validation.Args:request (Request):
+        The HTTP request object. format (str, optional): The format of the response.
+        Returns:Response: HTTP response with status and data.'
+      tags:
+      - accounts
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchoolInfo'
+          description: ''
+  /accounts/token-reset/:
+    post:
+      operationId: accounts_token_reset_create
+      tags:
+      - accounts
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /questions/all/:
+    get:
+      operationId: questions_all_retrieve
+      description: Displays all questions available in the system.
+      tags:
+      - questions
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+          description: ''
+components:
+  schemas:
+    Question:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        question:
+          type: string
+          maxLength: 255
+        options:
+          type: string
+          readOnly: true
+        picked_answer:
+          type: string
+          maxLength: 1
+        answer:
+          type: string
+          maxLength: 1
+        question_number:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - answer
+      - id
+      - options
+      - question
+      - question_number
+    SchoolInfo:
+      type: object
+      properties:
+        level:
+          type: string
+          maxLength: 50
+        faculty:
+          type: string
+          maxLength: 100
+        department:
+          type: string
+          maxLength: 100
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    UserRegistration:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        username:
+          type: string
+          maxLength: 30
+        first_name:
+          type: string
+          maxLength: 30
+        last_name:
+          type: string
+          maxLength: 30
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        level:
+          type: string
+          maxLength: 50
+        faculty:
+          type: string
+          maxLength: 100
+        department:
+          type: string
+          maxLength: 100
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

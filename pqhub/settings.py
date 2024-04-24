@@ -44,13 +44,26 @@ INSTALLED_APPS = [
     'chat',
     'channels',
     'rest_framework',
+    "drf_spectacular",
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema", # new
 }
+
+
+SPECTACULAR_SETTINGS = {
+"TITLE": "TUTCOV API Project",
+"DESCRIPTION": "A comprehensive documentation on all endpoints in tutcov",
+"VERSION": "1.0.0",
+# OTHER SETTINGS
+}
+
+
+
 
 ASGI_APPLICATION = 'pqhub.asgi.application'
 

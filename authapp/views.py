@@ -15,6 +15,7 @@ from .serializers import (
     )
 from datetime import timedelta
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema
 
 class PersonalInfoRegistrationView(APIView):
     """
@@ -29,6 +30,8 @@ class PersonalInfoRegistrationView(APIView):
     Returns:
         Response: HTTP response with status and data.
     """
+    @extend_schema(responses=UserRegistrationSerializer, description=
+                   "View for handling user registration and email confirmation.POST: Registers a user, generates and sends an OTP token via email.Args:request (Request): The HTTP request object.format (str, optional): The format of the response. Returns:Response: HTTP response with status and data.")
     def post(self, request, format=None) -> Response:
         # Validate user registration data
         serializer = UserRegistrationSerializer(data=request.data)
@@ -106,6 +109,8 @@ class SchoolInfoRegistrationView(APIView):
     Returns:
         Response: HTTP response with status and data.
     """
+    @extend_schema(responses=SchoolInfoSerializer, description=
+                   "View for handling school information registration.POST: Registers a user with school information after OTP validation.Args:request (Request): The HTTP request object. format (str, optional): The format of the response. Returns:Response: HTTP response with status and data.")
     def post(self, request, format=None) -> Response:
         stored_token = request.session.get('registration_token')
 
@@ -136,6 +141,7 @@ class SchoolInfoRegistrationView(APIView):
 from django.contrib import auth
 
 class UserLoginView(APIView):
+    @extend_schema(responses=UserLoginSerializer, description="Generates access and refresh tokens for a user")
     def post(self, request, format=None):
         serializer = UserLoginSerializer(data=request.data, context={"request": request})
 
@@ -198,11 +204,8 @@ class TokenResetView(APIView):
         # print(auth_header)
         if auth_header and auth_header.startswith('Bearer '):
             access_token = auth_header[len('Bearer '):]
-            # print("access_token", access_token)
-            # print(request.user)
-
-            # Check if the access token is associated with the current user
-            print("emaiaiaa" ,request.user.email)
+            
+    
             current_user = User.objects.get(email=request.user.email)
             print("current_user", current_user)
             custom_token = CustomToken.objects.filter(user=current_user, access_token=access_token).first()
