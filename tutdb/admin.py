@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User, Course, Token, Department, Question
+from .models import User, Course, Session, Token, Department, Question
 
 admin.site.register(User)
 
@@ -28,10 +28,14 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 admin.site.register(Department, DepartmentAdmin)
 
+@admin.register(Session)
+class SessionAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("session",)}
+
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ['question', 'question_number', 'session']
+    list_display = ['question', 'question_number']
     list_filter = ['question']
     search_fields = ['question', 'question_number']
     list_editable = ['question_number']

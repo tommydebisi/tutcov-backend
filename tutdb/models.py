@@ -141,17 +141,17 @@ class Course(models.Model):
         return self.name
     
 
-SESSION = (
-    ("2021/2022", "2021/2022"),
-    ("2022/2023", "2022/2023")
-)
+class Session(models.Model):
+    session = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100)
 
+    def __str__(self):
+        return self.session
 
 class Question(models.Model):
     question = models.CharField(max_length=255)
     image = models.ImageField(upload_to="question_images", blank=True, null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    session = models.CharField(choices=SESSION, max_length=100, default="2022/2023")
     image_url = models.URLField(blank=True, null=True)
     option_1 = models.CharField(max_length=100)
     option_2 = models.CharField(max_length=100)

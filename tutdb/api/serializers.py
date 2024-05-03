@@ -7,7 +7,7 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         # fields = "__all__"
-        fields = ['id', 'uuid', 'question', 'options', 'picked_answer', 'answer', 'question_number']
+        fields = ['id', 'uuid', 'question', 'session', 'options', 'picked_answer', 'answer', 'question_number']
 
     
     def get_all_options(self, obj):
@@ -16,11 +16,12 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class QuestionDetailSerializer(serializers.ModelSerializer):
+   
     options = serializers.SerializerMethodField("get_all_options")
     class Meta:
         model = Question
         # fields = "__all__"
-        fields = ['question_number', 'question', 'options']
+        fields = ['question_number', 'question', 'session', 'options']
 
     
     def get_all_options(self, obj):

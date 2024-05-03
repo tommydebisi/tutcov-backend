@@ -11,8 +11,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, IsAu
 class CourseQuestions(APIView):
     permission_classes = [AllowAny]
     
-    def get(self, request, course_code, session, format=None):
-        course_questions = Question.objects.filter(session=session, course__code_slug=course_code)
+    def get(self, request, session, format=None):
+        print(session)
+        course_questions = Question.objects.filter(session=session)
         serializer = QuestionSerializer(course_questions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -28,7 +29,7 @@ class QuestionListApiView(APIView):
     
 
 class QuestionDetailAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     serializer_class = QuestionDetailSerializer
 
     def get(self, request, uuid, format=None):
