@@ -127,17 +127,25 @@ WSGI_APPLICATION = 'pqhub.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     # db for postgresql
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME'), # name of db
+#         'USER': config('DB_USER'), # user of db
+#         'PASSWORD': config('DB_PASSWORD'), # password of db
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     },
+# }
+
 DATABASES = {
-    # db for postgresql
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'), # name of db
-        'USER': config('DB_USER'), # user of db
-        'PASSWORD': config('DB_PASSWORD'), # password of db
-        'HOST': 'localhost',
-        'PORT': '5432',
-    },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+
 
 CACHES = {
     "default": {
