@@ -19,6 +19,7 @@ class CourseAdmin(admin.ModelAdmin):
     list_editable = ['code', 'year']
     search_fields = ['name', 'year', 'code']
     list_filter = ['year']
+    prepopulated_fields = {"slug": ("name",)}
 
 
 class DepartmentAdmin(admin.ModelAdmin):
