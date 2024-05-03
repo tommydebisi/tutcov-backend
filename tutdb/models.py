@@ -151,6 +151,7 @@ class Session(models.Model):
 class Question(models.Model):
     question = models.CharField(max_length=255)
     image = models.ImageField(upload_to="question_images", blank=True, null=True)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     image_url = models.URLField(blank=True, null=True)
     option_1 = models.CharField(max_length=100)
