@@ -81,7 +81,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-AUTH_USER_MODEL = "tutdb.User"
+AUTH_USER_MODEL = "authapp.User"
 
 
 SIMPLE_JWT = {

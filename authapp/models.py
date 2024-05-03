@@ -10,12 +10,7 @@ from datetime import timedelta
 import random
 import string
 
-class Department(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100)
 
-    def __str__(self):
-        return self.name
 
 
 
@@ -116,3 +111,16 @@ class Token(models.Model):
 
     def is_refresh_token_expired(self):
         return timezone.now() >= self.refresh_token_expires_at
+    
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    level = models.CharField(max_length=50, blank=True)
+    faculty = models.CharField(max_length=100, blank=True)
+    department = models.CharField(max_length=100, blank=True)
+    
+    def __str__(self):
+        return f"{self.user.username} Profile"

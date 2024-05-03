@@ -9,7 +9,7 @@ from django.utils.crypto import get_random_string
 from django.core.mail import send_mail, BadHeaderError
 from django.core.cache import cache  # import Django's cache
 
-from tutdb.models import User, Token as CustomToken
+from authapp.models import User, Token as CustomToken
 from .serializers import (
     UserRegistrationSerializer, SchoolInfoSerializer, UserLoginSerializer
     )
