@@ -111,14 +111,22 @@ class Token(models.Model):
 
     def is_refresh_token_expired(self):
         return timezone.now() >= self.refresh_token_expires_at
-    
+
+
+YEAR = (
+    ("100 Level", "100 Level"),
+    ("200 Level", "200 Level"),
+    ("300 Level", "300 Level"),
+    ("400 Level", "400 Level"),
+    ("500 Level", "500 Level")
+)
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    level = models.CharField(max_length=50, blank=True)
+    level = models.CharField(max_length=50, blank=True, choices=YEAR)
     faculty = models.CharField(max_length=100, blank=True)
     department = models.CharField(max_length=100, blank=True)
     
