@@ -118,6 +118,26 @@ class Token(models.Model):
 
     def is_refresh_token_expired(self):
         return timezone.now() >= self.refresh_token_expires_at
+
+
+YEAR = (
+    ("Year 1", "Year 1"),
+    ("Year 2", "Year 2"),
+    ("Year 3", "Year 3"),
+    ("Year 4", "Year 4"),
+    ("Year 5", "Year 5")
+)
+
+class Course(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100)
+    year = models.CharField(choices=YEAR, max_length=100)
+    code = models.CharField(max_length=100)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
     
 
 

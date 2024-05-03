@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User, Token, Department, Question
+from .models import User, Course, Token, Department, Question
 
 admin.site.register(User)
 
@@ -11,6 +11,14 @@ class TokenAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Token, TokenAdmin)
+
+
+@admin.register(Course)
+class CourseAdmin(admin.ModelAdmin):
+    list_display = ['name', 'year', 'code']
+    list_editable = ['code', 'year']
+    search_fields = ['name', 'year', 'code']
+    list_filter = ['year']
 
 
 class DepartmentAdmin(admin.ModelAdmin):
