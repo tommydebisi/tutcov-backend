@@ -12,7 +12,7 @@ class CourseQuestions(APIView):
     permission_classes = [AllowAny]
     
     def get(self, request, course_code, session, format=None):
-        course_questions = Question.objects.filter(session=session, course__code=course_code)
+        course_questions = Question.objects.filter(session=session, course__code_slug=course_code)
         serializer = QuestionSerializer(course_questions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

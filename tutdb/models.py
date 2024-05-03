@@ -133,7 +133,7 @@ class Course(models.Model):
     slug = models.SlugField(max_length=100)
     year = models.CharField(choices=YEAR, max_length=100)
     code = models.CharField(max_length=100)
-    code_slug = models.SlugField(max_length=100, blank=True, null=True)
+    code_slug = models.SlugField(max_length=100)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
 
