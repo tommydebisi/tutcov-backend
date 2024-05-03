@@ -1,4 +1,4 @@
-from tutdb.api.serializers import QuestionSerializer, QuestionDetailSerializer, OptionsSerializer
+from tutdb.serializers import QuestionSerializer, QuestionDetailSerializer, OptionsSerializer
 from .models import Question
 from rest_framework.views import APIView
 from rest_framework.response import Response
