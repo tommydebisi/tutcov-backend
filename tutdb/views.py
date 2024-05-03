@@ -7,6 +7,15 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, IsAuthenticated
 
+
+class CourseQuestions(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request, course_code, session, format=None):
+        course_questions = Question.objects.filter(session=session, course__code=course_code)
+        serializer = QuestionSerializer(course_questions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class QuestionListApiView(APIView):
     permission_classes = [AllowAny]
     serializer_class = QuestionSerializer
