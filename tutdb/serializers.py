@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from tutdb.models import Question
+from tutdb.models import Question, Enrollment
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -38,3 +38,9 @@ class OptionsSerializer(serializers.Serializer):
         elif value == "":
             raise serializers.ValidationError("You must select an option")
         return value
+    
+
+class EnrollmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enrollment
+        fields = '__all__'
