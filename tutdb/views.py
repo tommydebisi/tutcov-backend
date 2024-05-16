@@ -1,5 +1,5 @@
-from tutdb.serializers import QuestionSerializer, QuestionDetailSerializer, OptionsSerializer
-from .models import Question, Course
+from tutdb.serializers import QuestionSerializer, EnrollmentSerializer, QuestionDetailSerializer, OptionsSerializer
+from .models import Question, Course, Enrollment
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -53,11 +53,11 @@ class QuestionDetailAPIView(APIView):
 
 
 # LOGIC FOR ENROLLING FOR A COURSE
-class EnrollStudent(APIView):
-    def post(self, request, course_id):
+class EnrollStudentAPIView(APIView):
+    def post(self, request, course_slug):
         # Get the course object
         try:
-            course = Course.objects.get(pk=course_id)
+            course = Course.objects.get(slug=course_slug)
         except Course.DoesNotExist:
             return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
         
@@ -68,7 +68,7 @@ class EnrollStudent(APIView):
         # Create enrollment
         enrollment_data = {'user': request.user.id, 'course': course_id}
         serializer = EnrollmentSerializer(data=enrollment_data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
