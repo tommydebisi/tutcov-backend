@@ -1,8 +1,15 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User, Course, Session, Question, Department
+from .models import User, Course, Enrollment, Session, Question, Department
 from authapp.models import Token
+
+@admin.register(Enrollment)
+class EnrollmentAdmin(admin.ModelAdmin):
+    list_display = ['user', 'course', 'enrolled_at']
+    list_filter = ['enrolled_at', 'course', 'user']
+    search_fields = ['enrolled_at', 'course', 'user']
+
 
 
 class TokenAdmin(admin.ModelAdmin):
@@ -36,6 +43,6 @@ class SessionAdmin(admin.ModelAdmin):
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ['question', 'question_number']
-    list_filter = ['question']
+    list_filter = ['question_number']
     search_fields = ['question', 'question_number']
     list_editable = ['question_number']

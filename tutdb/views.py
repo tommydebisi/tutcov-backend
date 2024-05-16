@@ -57,7 +57,7 @@ class EnrollStudentAPIView(APIView):
     def post(self, request, course_slug):
         # Get the course object
         try:
-            course = Course.objects.get(slug=course_slug)
+            course = Course.objects.get(slug=course_slug).id
         except Course.DoesNotExist:
             return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
         
@@ -66,7 +66,7 @@ class EnrollStudentAPIView(APIView):
             return Response({"error": "You are already enrolled in this course"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create enrollment
-        enrollment_data = {'user': request.user.id, 'course': course_id}
+        enrollment_data = {'user': request.user.id, 'course': course}
         serializer = EnrollmentSerializer(data=enrollment_data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
