@@ -1,5 +1,5 @@
 from tutdb.serializers import QuestionSerializer, QuestionResponseSerializer, MyEnrollmentSerializer, EnrollmentSerializer, QuestionDetailSerializer, OptionsSerializer
-from .models import Question, Course, Enrollment
+from .models import Question, Course, Enrollment, Session
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, IsAu
 from rest_framework.generics import ListAPIView
 from authapp.models import User
 from rest_framework import generics
+from rest_framework.pagination import PageNumberPagination
 
 class CourseQuestions(APIView):
     permission_classes = [AllowAny]
@@ -22,6 +23,8 @@ class CourseQuestions(APIView):
 class QuestionListApiView(APIView):
     permission_classes = [AllowAny]
     serializer_class = QuestionSerializer
+    pagination_class = PageNumberPagination
+    
     # @swagger_auto_schema(operation_description="Displays all questions available in the system.")
     @extend_schema(responses=QuestionSerializer, description="Displays all questions available in the system.")
     def get(self, request, format=None):
@@ -94,9 +97,11 @@ class QuestionResponseCreateAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
+        session_year= self.kwargs['session']
+        session = Session.objects.get(session=session_year)
         course_slug = self.kwargs['course_slug']
         course = Course.objects.get(slug=course_slug)
-        serializer.save(user=self.request.user, course=course) 
+        serializer.save(user=self.request.user, course=course, session=session) 
 
     # def get_serializer_context(self):
     #     return {"product_id": self.kwargs["product_pk"]}
