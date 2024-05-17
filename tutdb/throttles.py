@@ -3,7 +3,10 @@ from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
 class CustomUserRateThrottle(UserRateThrottle):
+    history_key = 'custom_user_throttle_history'
+
     def wait(self):
+        self.rate = '1000/minute'
         """
         Override the wait method to return a custom throttling message.
         """

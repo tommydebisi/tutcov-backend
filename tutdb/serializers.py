@@ -63,7 +63,7 @@ class MyEnrollmentSerializer(serializers.ModelSerializer):
     
 class UserResponseSerializer(serializers.ModelSerializer):
     is_correct = serializers.SerializerMethodField("check_accuracy")
-    
+    selected_choice = serializers.StringRelatedField()
     class Meta:
         model= UserResponse
         fields = ["question", "selected_choice", "is_correct"]        
@@ -96,5 +96,31 @@ class QuestionResponseSerializer(serializers.ModelSerializer):
             # response = UserResponse.objects.create(user=user, question_id=question_id, selected_choice_id=selected_choice_id)
             response = UserResponse.objects.create(user=user, question_id=question_id, selected_choice_id=selected_choice_id, course=course, session=session)
         return response
+
+
+class ItemSerializer(serializers.Serializer):
+    question_id = serializers.IntegerField()
+    selected_choice = serializers.CharField()
+
+
+class UpdateQuestionResponseSerializer(serializers.Serializer):
+    items = ItemSerializer(many=True)
+
+
+    def create(self, validated_data):
+        items_data = validated_data.get('items', [])
+        created_items = []
+        for item_data in items_data:
+            # Assuming item_data contains 'product_id' and 'quantity'
+            question_id = item_data.get('question_id')
+            selected_choice = item_data.get('selected_choice')
+            if question_id is not None and selected_choice is not None:
+                # Create your item object here or perform any desired operations
+                created_item = {
+                    'question_id': question_id,
+                    'selected_choice': selected_choice
+                }
+                created_items.append(created_item)
+        return created_items
 
     

@@ -1,5 +1,5 @@
-from tutdb.serializers import QuestionSerializer, QuestionResponseSerializer, MyEnrollmentSerializer, EnrollmentSerializer, QuestionDetailSerializer, OptionsSerializer
-from .models import Question, Course, Enrollment, Session
+from tutdb.serializers import QuestionSerializer, UpdateQuestionResponseSerializer, UserResponseSerializer, QuestionResponseSerializer, MyEnrollmentSerializer, EnrollmentSerializer, QuestionDetailSerializer, OptionsSerializer
+from .models import Question, UserResponse, Choice, Course, Enrollment, Session
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,6 +10,8 @@ from rest_framework.generics import ListAPIView
 from authapp.models import User
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
+from django.shortcuts import get_object_or_404
+
 
 class CourseQuestions(APIView):
     permission_classes = [AllowAny]
@@ -108,10 +110,56 @@ class QuestionResponseCreateAPIView(generics.ListCreateAPIView):
         course = Course.objects.get(slug=course_slug)
         return Question.objects.filter(course=course, session=session)
 
-    def perform_create(self, serializer):
-        session_year= self.kwargs['session']
+
+class UpdateQuestionResponseAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, format=None, **kwargs):
+        user = request.user
+        session_year = self.kwargs['session']
         session = Session.objects.get(slug=session_year)
         course_slug = self.kwargs['course_slug']
         course = Course.objects.get(slug=course_slug)
-        serializer.save(user=self.request.user, course_id=course.id, session=session) 
+
+        serializer = UpdateQuestionResponseSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer_items_data = serializer.validated_data.get('items', [])
+        print(serializer_items_data)
+
+        for item in serializer_items_data:
+            try:
+                question = Question.objects.get(id=item['question_id'])
+                selected_choice = item.get('selected_choice')
+                print(selected_choice)
+                user_response = UserResponse.objects.get(user=user, question=question, course=course, session=session)
+                selected_choice_id = Choice.objects.get(text=selected_choice)
+                user_response.selected_choice = selected_choice_id
+                user_response.save()
+                user_responses = UserResponse.objects.filter(user=user, course=course, session=session)
+                new_serializer = UserResponseSerializer(user_responses, many=True)
+                message = {"Success": "Answer saved"}
+                message.update({"data": new_serializer.data})
+                return Response(message, status=status.HTTP_202_ACCEPTED)
+            except UserResponse.DoesNotExist:  # Catch specific exception
+                user_response = UserResponse.objects.create(user=user, question=question, selected_choice_id=selected_choice_id, course=course, session=session)
+        user_responses = UserResponse.objects.filter(user=user, course=course, session=session)
+        new_serializer = UserResponseSerializer(user_responses, many=True)
+        return Response(new_serializer.data, status=status.HTTP_200_OK)
+
+    
+    # def delete(self, request, format=None, **kwargs):
+    #     cart_id = kwargs.get("cart_id")
+    #     cartitems = Cartitems.objects.filter(cart=cart_id)
+    #     serializer = CreateItemsSerializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer_items_data = serializer.validated_data.get('items', [])
+    #     for item in serializer_items_data:
+    #         try:
+    #             food = Food.objects.get(id=item['food_id'])
+    #             cartitem = Cartitems.objects.get(cart=cart_id, Food=food)
+    #             cartitem.delete()
+    #         except:
+    #             return Response("OOps", status=status.HTTP_400_BAD_REQUEST)
+    #     new_serializer = CartItemSerializer(cartitems, many=True)
+    #     return Response(new_serializer.data, status=status.HTTP_200_OK)
 
