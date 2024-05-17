@@ -88,6 +88,12 @@ class UserResponse(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+    # def save(self, *args, **kwargs):
+    #     if self.selected_choice:
+    #         if self.selected_choice == self.question.answer:
+    #             self.is_correct = True
+    #     super().save(*args, **kwargs)
 
 class UserScore(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

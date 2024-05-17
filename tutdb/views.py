@@ -130,16 +130,15 @@ class UpdateQuestionResponseAPIView(APIView):
             try:
                 question = Question.objects.get(id=item['question_id'])
                 selected_choice = item.get('selected_choice')
-                print(selected_choice)
+                print(selected_choice, question, course, session)
                 user_response = UserResponse.objects.get(user=user, question=question, course=course, session=session)
                 selected_choice_id = Choice.objects.get(text=selected_choice)
                 user_response.selected_choice = selected_choice_id
+                if user_response.selected_choice == user_response.question.answer:
+                    user_response.is_correct = True
+                else:
+                    user_response.is_correct = False
                 user_response.save()
-                user_responses = UserResponse.objects.filter(user=user, course=course, session=session)
-                new_serializer = UserResponseSerializer(user_responses, many=True)
-                message = {"Success": "Answer saved"}
-                message.update({"data": new_serializer.data})
-                return Response(message, status=status.HTTP_202_ACCEPTED)
             except UserResponse.DoesNotExist:  # Catch specific exception
                 user_response = UserResponse.objects.create(user=user, question=question, selected_choice_id=selected_choice_id, course=course, session=session)
         user_responses = UserResponse.objects.filter(user=user, course=course, session=session)

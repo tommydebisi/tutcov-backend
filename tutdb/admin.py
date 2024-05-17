@@ -15,7 +15,9 @@ class EnrollmentAdmin(admin.ModelAdmin):
 
 @admin.register(UserResponse)
 class UserResponseAdmin(admin.ModelAdmin):
-    list_display = ['user', 'course', 'session',  'is_correct', 'created_at']
+    list_display = ['user', 'course', 'session', 'is_correct', 'created_at']
+
+    
 
 
 class TokenAdmin(admin.ModelAdmin):

@@ -92,9 +92,9 @@ class QuestionResponseSerializer(serializers.ModelSerializer):
             selected_choice = data.get('selected_choice')
             print(question, selected_choice)
             selected_choice_id = Choice.objects.get(text=selected_choice).id
-            question_id = Question.objects.get(question_number=question).id
+            # question_id = Question.objects.get(question_number=question).id
             # response = UserResponse.objects.create(user=user, question_id=question_id, selected_choice_id=selected_choice_id)
-            response = UserResponse.objects.create(user=user, question_id=question_id, selected_choice_id=selected_choice_id, course=course, session=session)
+            response = UserResponse.objects.create(user=user, question_id=question, selected_choice_id=selected_choice_id, course=course, session=session)
         return response
 
 
