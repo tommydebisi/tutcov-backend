@@ -1,10 +1,11 @@
 from rest_framework import serializers
-from tutdb.models import Question, Enrollment, UserResponse, Choice
+from tutdb.models import Question, Session, Course, Enrollment, UserResponse, Choice
 
 
 class QuestionSerializer(serializers.ModelSerializer):
     options = serializers.SerializerMethodField("get_all_options")
     session = serializers.StringRelatedField()
+    answer = serializers.StringRelatedField()
     class Meta:
         model = Question
         # fields = "__all__"
@@ -82,13 +83,18 @@ class QuestionResponseSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context['request'].user
         response_data = self.context.get('request').data.get('items', [])
+        session_year = self.context['view'].kwargs['session']
+        session = Session.objects.get(slug=session_year)
+        course_slug = self.context['view'].kwargs['course_slug']
+        course = Course.objects.get(slug=course_slug)
         for data in response_data:
             question = data.get('question_id')
             selected_choice = data.get('selected_choice')
             print(question, selected_choice)
             selected_choice_id = Choice.objects.get(text=selected_choice).id
             question_id = Question.objects.get(question_number=question).id
-            response = UserResponse.objects.create(user=user, question_id=question_id, selected_choice_id=selected_choice_id)
+            # response = UserResponse.objects.create(user=user, question_id=question_id, selected_choice_id=selected_choice_id)
+            response = UserResponse.objects.create(user=user, question_id=question_id, selected_choice_id=selected_choice_id, course=course, session=session)
         return response
 
     

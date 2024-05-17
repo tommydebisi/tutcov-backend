@@ -14,9 +14,9 @@ from rest_framework.pagination import PageNumberPagination
 class CourseQuestions(APIView):
     permission_classes = [AllowAny]
     
-    def get(self, request, course_code, session, format=None):
+    def get(self, request, course_slug, session, format=None):
         print(session)
-        course_questions = Question.objects.filter(session__slug=session, course__code_slug=course_code)
+        course_questions = Question.objects.filter(session__slug=session, course__slug=course_slug)
         serializer = QuestionSerializer(course_questions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -65,7 +65,7 @@ class ListStudentEnrollment(APIView):
         user_id = User.objects.get(email=self.request.user)
         all_enrollments = Enrollment.objects.filter(user=self.request.user)
         serializer = MyEnrollmentSerializer(all_enrollments, many=True)
-        data = {"count": Enrollment.objects.filter(user_id=user_id).count()}
+        data = {"Number of Enrolled Courses": Enrollment.objects.filter(user_id=user_id).count()}
         data.update({"enrollments": serializer.data})
         return Response(data, status=status.HTTP_200_OK)
 

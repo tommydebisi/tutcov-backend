@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import UserResponse
+from .models import UserResponse, Choice
 
 @receiver(post_save, sender=UserResponse)
 def check_selected_choice(sender, instance, created, **kwargs):

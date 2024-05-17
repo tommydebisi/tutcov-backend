@@ -64,6 +64,8 @@ class Question(models.Model):
 
     def __str__(self):
         return self.question
+
+
     
 
 class Enrollment(models.Model):
@@ -73,8 +75,6 @@ class Enrollment(models.Model):
 
     class Meta:
         unique_together = ['user', 'course']
-
-
 
 
 class UserResponse(models.Model):

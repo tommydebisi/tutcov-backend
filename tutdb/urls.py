@@ -7,7 +7,7 @@ urlpatterns = [
     path("questions/<str:session>/<str:course_slug>/", QuestionResponseCreateAPIView.as_view(), name="quiz"),
     path("my-courses/", ListStudentEnrollment.as_view(), name="my-enrollments"),
     path("enroll/<str:course_slug>/", EnrollStudentAPIView.as_view(), name="enroll-course"),
-    path("<uuid:uuid>/", QuestionDetailAPIView.as_view(), name='single-question'),
-    path("<str:session>/<str:course_code>/", CourseQuestions.as_view(), name="course-questions"), 
+    path("questions/<uuid:uuid>/", QuestionDetailAPIView.as_view(), name='single-question'),
+    path("questions/all/<str:session>/<str:course_slug>/", CourseQuestions.as_view(), name="course-questions"), 
 
 ]
