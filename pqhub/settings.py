@@ -44,13 +44,34 @@ INSTALLED_APPS = [
     'chat',
     'channels',
     'rest_framework',
+    "drf_spectacular",
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema", # new
+    'DEFAULT_THROTTLE_CLASSES': [
+        'tutdb.throttles.CustomUserRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '5/day',
+        'user': '100/day'
+    }
 }
+
+
+SPECTACULAR_SETTINGS = {
+"TITLE": "TUTCOV API Project",
+"DESCRIPTION": "A comprehensive documentation on all endpoints in tutcov",
+"VERSION": "1.0.0",
+# OTHER SETTINGS
+}
+
+
+
 
 ASGI_APPLICATION = 'pqhub.asgi.application'
 
@@ -60,7 +81,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-AUTH_USER_MODEL = "tutdb.User"
+AUTH_USER_MODEL = "authapp.User"
 
 
 SIMPLE_JWT = {
@@ -106,17 +127,25 @@ WSGI_APPLICATION = 'pqhub.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     # db for postgresql
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME'), # name of db
+#         'USER': config('DB_USER'), # user of db
+#         'PASSWORD': config('DB_PASSWORD'), # password of db
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     },
+# }
+
 DATABASES = {
-    # db for postgresql
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'), # name of db
-        'USER': config('DB_USER'), # user of db
-        'PASSWORD': config('DB_PASSWORD'), # password of db
-        'HOST': 'localhost',
-        'PORT': '5432',
-    },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+
 
 CACHES = {
     "default": {
@@ -208,3 +237,4 @@ DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 SENDGRID_API_KEY = config("NEW_SENDGRID_API_KEY")
+
