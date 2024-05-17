@@ -66,3 +66,21 @@ class Enrollment(models.Model):
 
     class Meta:
         unique_together = ['user', 'course']
+
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    text = models.CharField(max_length=100)
+    is_correct = models.BooleanField(default=False)
+
+class UserResponse(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    selected_choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
+    is_correct = models.BooleanField(default=False)
+
+class UserScore(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    score = models.IntegerField(default=0)

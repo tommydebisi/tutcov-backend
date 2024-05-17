@@ -1,4 +1,4 @@
-from tutdb.serializers import QuestionSerializer, EnrollmentSerializer, QuestionDetailSerializer, OptionsSerializer
+from tutdb.serializers import QuestionSerializer, QuestionResponseSerializer, MyEnrollmentSerializer, EnrollmentSerializer, QuestionDetailSerializer, OptionsSerializer
 from .models import Question, Course, Enrollment
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,7 +6,9 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, IsAuthenticated
-
+from rest_framework.generics import ListAPIView
+from authapp.models import User
+from rest_framework import generics
 
 class CourseQuestions(APIView):
     permission_classes = [AllowAny]
@@ -53,7 +55,20 @@ class QuestionDetailAPIView(APIView):
 
 
 # LOGIC FOR ENROLLING FOR A COURSE
+class ListStudentEnrollment(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user_id = User.objects.get(email=self.request.user)
+        all_enrollments = Enrollment.objects.filter(user=self.request.user)
+        serializer = MyEnrollmentSerializer(all_enrollments, many=True)
+        data = {"count": Enrollment.objects.filter(user_id=user_id).count()}
+        data.update({"enrollments": serializer.data})
+        return Response(data, status=status.HTTP_200_OK)
+
 class EnrollStudentAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, course_slug):
         # Get the course object
         try:
@@ -71,4 +86,18 @@ class EnrollStudentAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+
+# LOGIC FOR QUIZ
+class QuestionResponseCreateAPIView(generics.CreateAPIView):
+    serializer_class = QuestionResponseSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        course_slug = self.kwargs['course_slug']
+        course = Course.objects.get(slug=course_slug)
+        serializer.save(user=self.request.user, course=course) 
+
+    # def get_serializer_context(self):
+    #     return {"product_id": self.kwargs["product_pk"]}
 

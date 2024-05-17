@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from tutdb.models import Question, Enrollment
+from tutdb.models import Question, Enrollment, UserResponse
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -44,3 +44,50 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
         fields = '__all__'
+
+
+class MyEnrollmentSerializer(serializers.ModelSerializer):
+    course_name = serializers.SerializerMethodField("get_course_name")
+    user = serializers.SerializerMethodField("get_user_name")
+    class Meta:
+        model = Enrollment
+        fields = ['id', 'user', 'course', 'course_name']
+
+    def get_course_name(self, obj):
+        return obj.course.name
+    
+    def get_user_name(self, obj):
+        return obj.user.username.capitalize()
+    
+class UserResponseSerializer(serializers.ModelSerializer):
+    is_correct = serializers.SerializerMethodField("check_accuracy")
+    class Meta:
+        model= UserResponse
+        fields = ["question", "selected_choice"]        
+    
+    def check_accuracy(self, obj):
+        if obj.selected_choice == obj.question._answer:
+            return True
+
+
+class QuestionResponseSerializer(serializers.ModelSerializer):
+    items = UserResponseSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = UserResponse
+        fields = ['id', 'items']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        response = UserResponse.objects.create(user=user)
+        response_data = self.context.get('request').data.get('items', [])
+        for data in response_data:
+            question_id = response_data['question_id']
+            selected_choice = response_data['quantity']
+            # food = Food.objects.get(id=food_id)
+            response.question = question_id
+            response.selected_choice = selected_choice
+            response.save()
+        return response
+
+    
