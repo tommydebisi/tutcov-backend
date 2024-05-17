@@ -124,9 +124,10 @@ YEAR = (
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
+    image = models.ImageField(default="user.jpg", upload_to="profile_pictures")
+    full_name = models.CharField(max_length=200, blank=True, null=True)
     level = models.CharField(max_length=50, blank=True, choices=YEAR)
+    country = models.CharField(max_length=100, default="Nigeria")
     faculty = models.CharField(max_length=100, blank=True)
     department = models.CharField(max_length=100, blank=True)
     

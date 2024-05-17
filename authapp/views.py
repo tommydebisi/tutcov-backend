@@ -3,13 +3,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.permissions import IsAuthenticated, AllowAny
-
+from authapp.serializers import ProfileSerializer
 from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.core.mail import send_mail, BadHeaderError
 from django.core.cache import cache  # import Django's cache
 
-from authapp.models import User, Token as CustomToken
+from authapp.models import User, Token as CustomToken, Profile
 from .serializers import (
     UserRegistrationSerializer, SchoolInfoSerializer, UserLoginSerializer
     )
@@ -225,3 +225,15 @@ class TokenResetView(APIView):
 
         # If the access token is invalid, not associated, or other errors occur, respond with an error
         return Response({'error': 'Invalid access token or user not authenticated'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None, **kwargs):
+        user = User.objects.get(email=request.user.email)
+        profile = Profile.objects.get(user=user)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
