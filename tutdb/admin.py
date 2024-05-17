@@ -1,8 +1,10 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User, Course, Enrollment, UserResponse, Session, Question, Department
+from .models import User, Course, Choice,Enrollment, UserResponse, Session, Question, Department
 from authapp.models import Token
+
+admin.site.register(Choice)
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
@@ -13,7 +15,7 @@ class EnrollmentAdmin(admin.ModelAdmin):
 
 @admin.register(UserResponse)
 class UserResponseAdmin(admin.ModelAdmin):
-    list_display = ['user', 'course', 'session', 'created_at']
+    list_display = ['user', 'course', 'session', 'is_correct', 'created_at']
 
 
 class TokenAdmin(admin.ModelAdmin):

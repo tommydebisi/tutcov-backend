@@ -113,5 +113,5 @@ class QuestionResponseCreateAPIView(generics.ListCreateAPIView):
         session = Session.objects.get(slug=session_year)
         course_slug = self.kwargs['course_slug']
         course = Course.objects.get(slug=course_slug)
-        serializer.save(user=self.request.user, course=course, session=session) 
+        serializer.save(user=self.request.user, course_id=course.id, session=session) 
 

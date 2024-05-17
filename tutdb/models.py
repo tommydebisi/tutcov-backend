@@ -39,6 +39,13 @@ class Department(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Choice(models.Model):
+    text = models.CharField(max_length=100)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.text
 
 class Question(models.Model):
     question = models.CharField(max_length=255)
@@ -51,7 +58,7 @@ class Question(models.Model):
     option_3 = models.CharField(max_length=100)
     option_4 = models.CharField(max_length=100)
     picked_answer = models.CharField(max_length=1, blank=True)
-    answer = models.CharField(max_length=1)
+    answer = models.ForeignKey(Choice, on_delete=models.CASCADE)
     question_number = models.IntegerField()
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -68,16 +75,14 @@ class Enrollment(models.Model):
         unique_together = ['user', 'course']
 
 
-class Choice(models.Model):
-    text = models.CharField(max_length=100)
-    is_correct = models.BooleanField(default=False)
+
 
 class UserResponse(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    session = models.ForeignKey(Session, on_delete=models.CASCADE)
-    selected_choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, blank=True, null=True)
+    selected_choice = models.ForeignKey(Choice, on_delete=models.CASCADE, blank=True, null=True)
     is_correct = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

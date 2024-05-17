@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from tutdb.models import Question, Enrollment, UserResponse
+from tutdb.models import Question, Enrollment, UserResponse, Choice
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -83,8 +83,11 @@ class QuestionResponseSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         response_data = self.context.get('request').data.get('items', [])
         for data in response_data:
-            question_id = data.get('question_id')
-            selected_choice_id = data.get('selected_choice')
+            question = data.get('question_id')
+            selected_choice = data.get('selected_choice')
+            print(question, selected_choice)
+            selected_choice_id = Choice.objects.get(text=selected_choice).id
+            question_id = Question.objects.get(question_number=question).id
             response = UserResponse.objects.create(user=user, question_id=question_id, selected_choice_id=selected_choice_id)
         return response
 
