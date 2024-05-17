@@ -4,6 +4,7 @@ from tutdb.models import Question, Enrollment, UserResponse
 
 class QuestionSerializer(serializers.ModelSerializer):
     options = serializers.SerializerMethodField("get_all_options")
+    session = serializers.StringRelatedField()
     class Meta:
         model = Question
         # fields = "__all__"
@@ -61,12 +62,13 @@ class MyEnrollmentSerializer(serializers.ModelSerializer):
     
 class UserResponseSerializer(serializers.ModelSerializer):
     is_correct = serializers.SerializerMethodField("check_accuracy")
+    
     class Meta:
         model= UserResponse
-        fields = ["question", "selected_choice"]        
+        fields = ["question", "selected_choice", "is_correct"]        
     
     def check_accuracy(self, obj):
-        if obj.selected_choice == obj.question._answer:
+        if obj.selected_choice == obj.question.answer:
             return True
 
 
@@ -79,15 +81,11 @@ class QuestionResponseSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = self.context['request'].user
-        response = UserResponse.objects.create(user=user)
         response_data = self.context.get('request').data.get('items', [])
         for data in response_data:
-            question_id = response_data['question_id']
-            selected_choice = response_data['quantity']
-            # food = Food.objects.get(id=food_id)
-            response.question = question_id
-            response.selected_choice = selected_choice
-            response.save()
+            question_id = data.get('question_id')
+            selected_choice_id = data.get('selected_choice')
+            response = UserResponse.objects.create(user=user, question_id=question_id, selected_choice_id=selected_choice_id)
         return response
 
     

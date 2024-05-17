@@ -24,7 +24,7 @@ class QuestionListApiView(APIView):
     permission_classes = [AllowAny]
     serializer_class = QuestionSerializer
     pagination_class = PageNumberPagination
-    
+
     # @swagger_auto_schema(operation_description="Displays all questions available in the system.")
     @extend_schema(responses=QuestionSerializer, description="Displays all questions available in the system.")
     def get(self, request, format=None):
@@ -92,17 +92,26 @@ class EnrollStudentAPIView(APIView):
     
 
 # LOGIC FOR QUIZ
-class QuestionResponseCreateAPIView(generics.CreateAPIView):
-    serializer_class = QuestionResponseSerializer
+class QuestionResponseCreateAPIView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return QuestionResponseSerializer
+        return QuestionSerializer
+
+    def get_queryset(self):
+        session_year= self.kwargs['session']
+        print(self.kwargs['session'])
+        session = Session.objects.get(slug=session_year)
+        course_slug = self.kwargs['course_slug']
+        course = Course.objects.get(slug=course_slug)
+        return Question.objects.filter(course=course, session=session)
 
     def perform_create(self, serializer):
         session_year= self.kwargs['session']
-        session = Session.objects.get(session=session_year)
+        session = Session.objects.get(slug=session_year)
         course_slug = self.kwargs['course_slug']
         course = Course.objects.get(slug=course_slug)
         serializer.save(user=self.request.user, course=course, session=session) 
-
-    # def get_serializer_context(self):
-    #     return {"product_id": self.kwargs["product_pk"]}
 
