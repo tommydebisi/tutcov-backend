@@ -12,6 +12,11 @@ from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None, )
+
 
 class CourseQuestions(APIView):
     permission_classes = [AllowAny]

@@ -3,6 +3,7 @@ from .views import QuestionListApiView, ListStudentEnrollment, QuestionDetailAPI
 
 
 urlpatterns = [
+    path("dashboard/", )
     path("questions/all/", QuestionListApiView.as_view(), name="all-questions"),
     path("questions/<str:session>/<str:course_slug>/", QuestionResponseCreateAPIView.as_view(), name="quiz"),
     path("questions/<str:session>/<str:course_slug>/change/", UpdateQuestionResponseAPIView.as_view(), name="quiz-update"),

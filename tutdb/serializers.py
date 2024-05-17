@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from tutdb.models import Question, Session, Course, Enrollment, UserResponse, Choice
-
+from authapp.models import User
 
 class QuestionSerializer(serializers.ModelSerializer):
     options = serializers.SerializerMethodField("get_all_options")
@@ -124,3 +124,28 @@ class UpdateQuestionResponseSerializer(serializers.Serializer):
         return created_items
 
     
+
+class DashboardSerializer(serializers.ModelSerializer):
+    courses = serializers.SerializerMethodField("get_number_of_courses")
+    level = serializers.SerializerMethodField("get_user_level")
+
+    class Meta:
+        model = User
+        fields = ["username", "level", "courses"]
+
+    def get_number_of_courses(self, obj):
+        all_enrollments = Enrollment.objects.filter(user=obj)
+        return all_enrollments.count()
+    
+    def get_user_level(self, obj):
+        if obj.profile.level == "100 Level":
+            level = 1
+        elif obj.profile.level == "200 Level":
+            level = 2
+        elif obj.profile.level == "300 Level":
+            level = 3
+        elif obj.profile.level == "400 Level":
+            level = 4
+        if obj.profile.level == "500 Level":
+            level = 5
+        return level

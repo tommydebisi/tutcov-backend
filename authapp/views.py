@@ -237,3 +237,11 @@ class UserProfileView(APIView):
         serializer = ProfileSerializer(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    def put(self, request, format=None, **kwargs):
+        user = User.objects.get(email=request.user.email)
+        profile = Profile.objects.get(user=user)
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
