@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-
 from tutdb.models import User
+from authapp.models import Profile
 from pqhub.backends import CustomUserModelBackend
 
 
@@ -49,3 +49,9 @@ class UserLoginSerializer(serializers.Serializer):
                 raise serializers.ValidationError("Invalid credentials")
         else:
             raise serializers.ValidationError("Must include 'email' and 'password'")
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = "__all__"

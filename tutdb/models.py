@@ -1,7 +1,8 @@
+from typing import Iterable
 from django.db import models
 import uuid
 from django.contrib.auth import get_user_model
-
+from django.utils.text import slugify
 User = get_user_model()
 
 
@@ -12,6 +13,33 @@ YEAR = (
     ("Year 4", "Year 4"),
     ("Year 5", "Year 5")
 )
+
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+class Faculty(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = 'Faculties'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 class Course(models.Model):
     name = models.CharField(max_length=100)
@@ -33,12 +61,14 @@ class Session(models.Model):
     def __str__(self):
         return self.session
     
-class Department(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100)
+
+    
+class Choice(models.Model):
+    text = models.CharField(max_length=100)
+    is_correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.text
 
 class Question(models.Model):
     question = models.CharField(max_length=255)
@@ -51,12 +81,14 @@ class Question(models.Model):
     option_3 = models.CharField(max_length=100)
     option_4 = models.CharField(max_length=100)
     picked_answer = models.CharField(max_length=1, blank=True)
-    answer = models.CharField(max_length=1)
+    answer = models.ForeignKey(Choice, on_delete=models.CASCADE)
     question_number = models.IntegerField()
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
         return self.question
+
+
     
 
 class Enrollment(models.Model):
@@ -66,3 +98,30 @@ class Enrollment(models.Model):
 
     class Meta:
         unique_together = ['user', 'course']
+
+    def __str__(self):
+        return self.course.code
+
+
+class UserResponse(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, blank=True, null=True)
+    selected_choice = models.ForeignKey(Choice, on_delete=models.CASCADE, blank=True, null=True)
+    is_correct = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+    
+    # def save(self, *args, **kwargs):
+    #     if self.selected_choice:
+    #         if self.selected_choice == self.question.answer:
+    #             self.is_correct = True
+    #     super().save(*args, **kwargs)
+
+class UserScore(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    score = models.IntegerField(default=0)
