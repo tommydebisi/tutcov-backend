@@ -127,6 +127,7 @@ class Department(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+
 class Faculty(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, blank=True, null=True)

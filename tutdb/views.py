@@ -1,4 +1,4 @@
-from tutdb.serializers import QuestionSerializer, DashboardSerializer, UpdateQuestionResponseSerializer, UserResponseSerializer, QuestionResponseSerializer, MyEnrollmentSerializer, EnrollmentSerializer, QuestionDetailSerializer, OptionsSerializer
+from tutdb.serializers import QuestionSerializer, DashboardCoursesSerializer, CoursesSerializer, NewCoursesSerializer, DashboardSerializer, UpdateQuestionResponseSerializer, UserResponseSerializer, QuestionResponseSerializer, MyEnrollmentSerializer, EnrollmentSerializer, QuestionDetailSerializer, OptionsSerializer
 from .models import Question, UserResponse, Choice, Course, Enrollment, Session
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,6 +11,9 @@ from authapp.models import User
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
+from authapp.models import User, Profile
+
+
 
 class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
@@ -22,10 +25,21 @@ class DashboardView(APIView):
     
 
 class CoursesAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, format=None, **kwargs):
-        user = request.user
-        all_enrollments = User.objects.get(user=user).enrollments.all()
-        all_faculty_courses = Course.objects.filter(faculty=user)
+        user = User.objects.get(email=request.user)
+        profile_faculty = Profile.objects.get(user=user).faculty
+        print(profile_faculty)
+        all_enrollments = Enrollment.objects.filter(user=user)
+        all_faculty_courses = Course.objects.filter(faculty=profile_faculty)
+        # all_departmental_courses = Course.objects.filter(faculty=user.profile.faculty, department=user.profile.department)
+        serialized_all_enrollments = DashboardCoursesSerializer(all_enrollments, many=True)
+        serialized_all_faculty_courses = CoursesSerializer(all_faculty_courses, many=True)
+
+        # serialized_faculty_courses = NewCoursesSerializer(all_faculty_courses)
+        # serialzied_departmental_courses = NewCoursesSerializer(all_departmental_courses)
+        return Response({"Your saved courses" : serialized_all_enrollments.data,
+                         "Your faculty courses": serialized_all_faculty_courses.data}, status=status.HTTP_200_OK)
 
 
 class CourseQuestions(APIView):

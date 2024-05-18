@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import User, Profile
+from .models import User, Profile, Department, Faculty
+
+
+admin.site.register([Department, Faculty])
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -10,6 +13,6 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'level', 'faculty']
-    list_filter = ['level', 'faculty', 'department']
+    list_display = ['user']
+    list_filter = ['level']
 

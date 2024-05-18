@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.utils.text import slugify
 User = get_user_model()
 from django.conf import settings
+from authapp.models import Faculty as MyFaculty, Department as MyDepartment
 
 
 YEAR = (
@@ -46,8 +47,8 @@ class Course(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
     year = models.CharField(choices=YEAR, max_length=100)
-    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    faculty = models.ForeignKey(MyFaculty, on_delete=models.CASCADE)
+    department = models.ForeignKey(MyDepartment, on_delete=models.CASCADE)
     code = models.CharField(max_length=100)
     code_slug = models.SlugField(max_length=100)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
