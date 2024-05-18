@@ -25,7 +25,7 @@ class CoursesAPIView(APIView):
     def get(self, request, format=None, **kwargs):
         user = request.user
         all_enrollments = User.objects.get(user=user).enrollments.all()
-        all_faculty_courses = Course
+        all_faculty_courses = Course.objects.filter(faculty=user)
 
 
 class CourseQuestions(APIView):

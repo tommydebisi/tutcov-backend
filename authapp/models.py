@@ -9,9 +9,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import timedelta
 import random
 import string
-
-
-
+from django.utils.text import slugify
+from django.conf import settings
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -86,7 +85,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Token(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     access_token = models.CharField(max_length=255)
     refresh_token = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -116,16 +115,43 @@ YEAR = (
     ("500 Level", "500 Level")
 )
 
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+class Faculty(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = 'Faculties'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     image = models.ImageField(default="user.jpg", upload_to="profile_pictures")
     full_name = models.CharField(max_length=200, blank=True, null=True)
     phone_number = models.CharField
     level = models.CharField(max_length=50, blank=True, choices=YEAR)
     country = models.CharField(max_length=100, default="Nigeria")
-    faculty = models.CharField(max_length=100, blank=True)
-    department = models.CharField(max_length=100, blank=True)
-    
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE, blank=True, null=True)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, blank=True, null=True)
+
+
     def __str__(self):
         return f"{self.user.username} Profile"
