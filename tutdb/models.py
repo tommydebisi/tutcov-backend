@@ -14,13 +14,31 @@ YEAR = (
     ("Year 5", "Year 5")
 )
 
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
 class Faculty(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200)
+    slug = models.SlugField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = 'Faculties'
+
+    def __str__(self):
+        return self.name
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
 class Course(models.Model):
@@ -43,12 +61,7 @@ class Session(models.Model):
     def __str__(self):
         return self.session
     
-class Department(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100)
 
-    def __str__(self):
-        return self.name
     
 class Choice(models.Model):
     text = models.CharField(max_length=100)

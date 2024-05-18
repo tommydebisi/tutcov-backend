@@ -176,4 +176,3 @@ class UpdateQuestionResponseAPIView(APIView):
     #             return Response("OOps", status=status.HTTP_400_BAD_REQUEST)
     #     new_serializer = CartItemSerializer(cartitems, many=True)
     #     return Response(new_serializer.data, status=status.HTTP_200_OK)
-
