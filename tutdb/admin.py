@@ -1,10 +1,12 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User, Course, Choice,Enrollment, UserResponse, Session, Question, Department
+from .models import User, Course, Choice,Enrollment, UserResponse, Session, Question, Department, Faculty
 from authapp.models import Token
 
 admin.site.register(Choice)
+
+admin.site.register(Faculty)
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):

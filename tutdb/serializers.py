@@ -149,3 +149,9 @@ class DashboardSerializer(serializers.ModelSerializer):
         if obj.profile.level == "500 Level":
             level = 5
         return level
+
+
+class CoursesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enrollment
+        fields = ["user", "course", "enrolled_at"]

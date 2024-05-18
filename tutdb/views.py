@@ -1,4 +1,4 @@
-from tutdb.serializers import QuestionSerializer, UpdateQuestionResponseSerializer, UserResponseSerializer, QuestionResponseSerializer, MyEnrollmentSerializer, EnrollmentSerializer, QuestionDetailSerializer, OptionsSerializer
+from tutdb.serializers import QuestionSerializer, DashboardSerializer, UpdateQuestionResponseSerializer, UserResponseSerializer, QuestionResponseSerializer, MyEnrollmentSerializer, EnrollmentSerializer, QuestionDetailSerializer, OptionsSerializer
 from .models import Question, UserResponse, Choice, Course, Enrollment, Session
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -15,7 +15,17 @@ from django.shortcuts import get_object_or_404
 class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, format=None, )
+    def get(self, request, format=None, **kwargs):
+        user = request.user
+        serializer = DashboardSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class CoursesAPIView(APIView):
+    def get(self, request, format=None, **kwargs):
+        user = request.user
+        all_enrollments = User.objects.get(user=user).enrollments.all()
+        all_faculty_courses = Course
 
 
 class CourseQuestions(APIView):

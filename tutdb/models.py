@@ -1,7 +1,8 @@
+from typing import Iterable
 from django.db import models
 import uuid
 from django.contrib.auth import get_user_model
-
+from django.utils.text import slugify
 User = get_user_model()
 
 
@@ -12,6 +13,15 @@ YEAR = (
     ("Year 4", "Year 4"),
     ("Year 5", "Year 5")
 )
+
+class Faculty(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 class Course(models.Model):
     name = models.CharField(max_length=100)
@@ -75,6 +85,9 @@ class Enrollment(models.Model):
 
     class Meta:
         unique_together = ['user', 'course']
+
+    def __str__(self):
+        return self.course.code
 
 
 class UserResponse(models.Model):

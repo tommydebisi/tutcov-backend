@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import QuestionListApiView, ListStudentEnrollment, QuestionDetailAPIView, CourseQuestions, UpdateQuestionResponseAPIView, QuestionResponseCreateAPIView,EnrollStudentAPIView
+from .views import QuestionListApiView, DashboardView, ListStudentEnrollment, QuestionDetailAPIView, CourseQuestions, UpdateQuestionResponseAPIView, QuestionResponseCreateAPIView,EnrollStudentAPIView
 
 
 urlpatterns = [
-    path("dashboard/", )
+    path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("questions/all/", QuestionListApiView.as_view(), name="all-questions"),
     path("questions/<str:session>/<str:course_slug>/", QuestionResponseCreateAPIView.as_view(), name="quiz"),
     path("questions/<str:session>/<str:course_slug>/change/", UpdateQuestionResponseAPIView.as_view(), name="quiz-update"),
