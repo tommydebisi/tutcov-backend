@@ -122,8 +122,19 @@ class UpdateQuestionResponseSerializer(serializers.Serializer):
                 }
                 created_items.append(created_item)
         return created_items
-
     
+
+
+class DashboardCoursesSerializer(serializers.ModelSerializer):
+    course = serializers.SerializerMethodField("get_course_code")
+
+    class Meta:
+        model = Enrollment
+        fields = ["course"]
+
+    def get_course_code(self, obj):
+        return obj.course.code
+
 
 class DashboardSerializer(serializers.ModelSerializer):
     courses = serializers.SerializerMethodField("get_number_of_courses")
@@ -155,3 +166,9 @@ class CoursesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
         fields = ["user", "course", "enrolled_at"]
+
+
+class NewCoursesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = "__all__"

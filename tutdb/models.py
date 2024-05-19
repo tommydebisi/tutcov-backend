@@ -4,6 +4,8 @@ import uuid
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify
 User = get_user_model()
+from django.conf import settings
+from authapp.models import Faculty as MyFaculty, Department as MyDepartment
 
 
 YEAR = (
@@ -45,9 +47,11 @@ class Course(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
     year = models.CharField(choices=YEAR, max_length=100)
+    faculty = models.ForeignKey(MyFaculty, on_delete=models.CASCADE)
+    department = models.ForeignKey(MyDepartment, on_delete=models.CASCADE)
     code = models.CharField(max_length=100)
     code_slug = models.SlugField(max_length=100)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -92,7 +96,7 @@ class Question(models.Model):
     
 
 class Enrollment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     enrolled_at = models.DateTimeField(auto_now_add=True)
 
@@ -104,7 +108,7 @@ class Enrollment(models.Model):
 
 
 class UserResponse(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
     session = models.ForeignKey(Session, on_delete=models.CASCADE, blank=True, null=True)
@@ -122,6 +126,6 @@ class UserResponse(models.Model):
     #     super().save(*args, **kwargs)
 
 class UserScore(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     score = models.IntegerField(default=0)
