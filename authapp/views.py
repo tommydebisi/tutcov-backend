@@ -142,8 +142,21 @@ class SchoolInfoRegistrationView(APIView):
 from django.contrib import auth
 
 class UserLoginView(APIView):
+    
     @extend_schema(responses=UserLoginSerializer, description="Generates access and refresh tokens for a user")
     def post(self, request, format=None):
+        """
+        View for logging in only registered users.
+
+        POST: Logs in a user with information provided after validation and create access and refresh tokens.
+
+        Args:
+            request (Request): The HTTP request object.
+            format (str, optional): The format of the response.
+
+        Returns:
+            Response: HTTP response with status and data.
+        """
         serializer = UserLoginSerializer(data=request.data, context={"request": request})
 
         if serializer.is_valid():
@@ -175,6 +188,7 @@ class UserLoginView(APIView):
 
 
 class UserLogoutView(APIView):
+    """View to log out the current user."""
     permission_classes = [AllowAny]
 
     def post(self, request, format=None):
