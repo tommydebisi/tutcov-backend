@@ -153,6 +153,5 @@ class Profile(models.Model):
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE, blank=True, null=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, blank=True, null=True)
 
-
     def __str__(self):
         return f"{self.user.username} Profile"

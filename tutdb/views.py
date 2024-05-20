@@ -120,11 +120,15 @@ class EnrollStudentAPIView(APIView):
             return Response({"error": "You are already enrolled in this course"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create enrollment
-        enrollment_data = {'user': request.user.id, 'course': course}
-        serializer = EnrollmentSerializer(data=enrollment_data)
+        # enrollment_data = {'user': request.user.id, 'course': course, 'course title': course.name}
+        my_course = Course.objects.get(slug=course_slug)
+        new_enrollment = Enrollment.objects.create(user=request.user, course=my_course)
+        serializer = EnrollmentSerializer(new_enrollment, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        message = {"Success": "You have successfully enrolled for this course"}
+        message.update(dict(serializer.data))
+        return Response(message, status=status.HTTP_201_CREATED)
     
 
 # LOGIC FOR QUIZ

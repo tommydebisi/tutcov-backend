@@ -48,12 +48,13 @@ class PersonalInfoRegistrationView(APIView):
             request.session['personal_info'] = serializer.validated_data
 
             # Send registration email with OTP token
-            email_sent = self.send_registration_email(otp_token, serializer.validated_data['email'])
+            # email_sent = self.send_registration_email(otp_token, serializer.validated_data['email'])
 
-            if email_sent:
-                return Response({'token_sent': True}, status=status.HTTP_200_OK)
-            else:
-                return Response({'error': 'Failed to send email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # if email_sent:
+            #     return Response({'token_sent': True}, status=status.HTTP_200_OK)
+            # else:
+            serializer.save()
+            return Response({'Success': 'Account creation successful'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # def send_registration_email(self, otp_token, email) -> bool:

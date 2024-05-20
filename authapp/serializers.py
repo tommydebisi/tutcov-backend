@@ -8,7 +8,7 @@ from pqhub.backends import CustomUserModelBackend
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'username', 'first_name', 'last_name', 'password', 'level', 'faculty', 'department')
+        fields = ('email', 'username', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_password(self, value):
