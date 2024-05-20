@@ -43,10 +43,16 @@ class Faculty(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+TAG_CHOICES = (
+    ("New", "New"),
+    ("Stale", "Stale")
+)
+
 class Course(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
     year = models.CharField(choices=YEAR, max_length=100)
+    tag = models.CharField(choices=TAG_CHOICES, max_length=100, default="New")
     faculty = models.ForeignKey(MyFaculty, on_delete=models.CASCADE)
     department = models.ForeignKey(MyDepartment, on_delete=models.CASCADE)
     code = models.CharField(max_length=100)
