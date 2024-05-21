@@ -29,7 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-
+# /manage.py spectacular --file schema.yml
 # Application definition
 
 INSTALLED_APPS = [
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'channels',
     'rest_framework',
     "drf_spectacular",
+    'drf_yasg',
 ]
 
 REST_FRAMEWORK = {
@@ -230,10 +231,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # APPEND_SLASH=False
 
-# DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
-# EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
-# SENDGRID_SANDBOX_MODE_IN_DEBUG = False
-# SENDGRID_API_KEY = config("NEW_SENDGRID_API_KEY")
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+SENDGRID_API_KEY = config("NEW_SENDGRID_API_KEY")
 
 # DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 # EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
