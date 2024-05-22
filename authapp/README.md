@@ -1,8 +1,8 @@
-# TUTCOV Application API
+# TUTCOV Authentication and Authorization  API
 
 ## Application Overview
 
-The Event Application API serves as the backend for the authentication of TUTCOV application. It allows users to register, login and logout. Key features include user authentication, user registration, user login, user logout and user profile view. 
+The TUTCOV Application API serves as the backend for the authentication of TUTCOV application. It allows users to register, login and logout. Key features include user authentication, user registration, user login, user logout and user profile view. 
 
 ## Installation Instructions
 
@@ -10,7 +10,7 @@ The Event Application API serves as the backend for the authentication of TUTCOV
 
 Before setting up the project locally, ensure you have the following prerequisites installed:
 
-- [Python](https://www.python.org/downloads/) (>=3.11.4)
+- [Python](https://www.python.org/downloads/) (>=3.10)
 - [Django](https://www.djangoproject.com/download/)
 - [Django Rest Framework](https://www.django-rest-framework.org/#installation)
 - A Database System (e.g., PostgreSQL, MySQL, SQLite) - [Django Database Installation](https://www.djangoproject.com/download/#database-installation)
@@ -36,7 +36,7 @@ Before setting up the project locally, ensure you have the following prerequisit
 
 4. Set up a virtual environment:
 
-        py -m venv ENV
+        py -m venv env
 
 
 5. Activate your virtual environment (for windows):
@@ -79,50 +79,55 @@ To access most endpoints of the API, you need to authenticate. Use the Token-bas
 
 - /api/token/: Obtain an authentication token. -->
 
-#### Personal-Info-Registration-View:
+### Personal-Info-Registration-View:
 
-  **- /personal-info/**:
-    View for handling user registration and email confirmation.
-    REQUEST METHOD: GET, POST- Registers a user, generates and sends an OTP token via email with django's send_mail function.
-    ARGS:
+>  ### `/personal-info/`:
+> 
+>> ###### _View for handling user registration and email confirmation._
+>    
+>> **REQUEST METHOD:** GET, POST- Registers a user, generates and sends an OTP token via email with django's send_mail function.
+>
+>> **ARGS:**
         request (Request): The HTTP request object.
         format (str, optional): The format of the response.
-    RETURNS:
-        Response: HTTP response with status and data.
+>    
+>> **RETURNS**: Response: HTTP response with status and data.
 
-#### School-Info-Registration-View:
-**- school-info/:**
-    View for handling school information registration.
-    REQUEST METHOD: POST- Registers a user with school information after OTP validation.
-    ARGS:
-        request (Request): The HTTP request object.
-        format (str, optional): The format of the response.
-    RETURNS:
-        Response: HTTP response with status and data.
+### School-Info-Registration-View:
+> ### `/school-info/`:
+>> ###### _View for handling school information registration with the student._
+>
+>> **REQUEST METHOD:** POST- Registers a user with school information after OTP validation.
+>
+>> **ARGS:** request (Request): The HTTP request object.
+    format (str, optional): The format of the response.
+>
+>> **RETURNS:** Response: HTTP response with status and data.
 
-#### User-Login-View:
-
-**- /login/:**
-    View for logging in only registered users.
-    REQUEST METHOD: GET, POST- Logs in a user with information provided after validation and create access and refresh tokens.
-    ARGS:
-        request (Request): The HTTP request object.
-        format (str, optional): The format of the response.
-    RETURNS:
-        Response: HTTP response with status and data.
+### User-Login-View:
+> ### `/login/`: 
+>
+>> ###### _View for logging in only registered users._
+>    
+>> **REQUEST METHOD**: GET, POST- Logs in a user with information provided after validation and create access and refresh tokens.
+>    
+>> **ARGS:** request (Request): The HTTP request object.
+>  Format (str, optional): The format of the response.
+>    
+>> **RETURNS:** Response: HTTP response with status and data.
 
 
 #### User-Logout-View:
-    """View to log out the current user."""
+>### `/logout/`:
+>> ###### _View to log out the current user. This endpoint retrieves the access token from the Authorization header. Checks if the access token is associated with the current user and proceed to log out the user._
+>> _If the access token is invalid or not associated, respond with an error:
+    {'error': 'Invalid access token or user not authenticated'}_
 
-**- /logout/:**
-This endpoint retrieves the access token from the Authorization header.
-Check if the access token is associated with the current user and proceed to log out the user.
-
-If the access token is invalid or not associated, respond with an error:
-    {'error': 'Invalid access token or user not authenticated'}
-
-
+#### User Profile View:
+> ### `/me/`:
+> ###### _Only authenticated users can access this page. The user gets to view and edit their information on the application._
+> 
+_
 ## Getting Started
 
 To get started with the project, refer to the [Installation Instructions](#installation-instructions) and [Usage Instructions](#usage-instructions) sections. Familiarize yourself with the API endpoints by exploring the [API Documentation](#api-documentation) provided.
