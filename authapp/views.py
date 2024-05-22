@@ -244,6 +244,7 @@ class TokenResetView(APIView):
 
 
 class UserProfileView(APIView):
+    """Only authenticated users can access this page."""
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None, **kwargs):
@@ -253,6 +254,7 @@ class UserProfileView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def put(self, request, format=None, **kwargs):
+        """The user gets to view and edit their information on the application."""
         user = User.objects.get(email=request.user.email)
         profile = Profile.objects.get(user=user)
         serializer = ProfileSerializer(profile, data=request.data, partial=True)
