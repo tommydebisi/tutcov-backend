@@ -11,7 +11,7 @@ from django.core.cache import cache  # import Django's cache
 
 from authapp.models import User, Token as CustomToken, Profile
 from .serializers import (
-    UserRegistrationSerializer, SchoolInfoSerializer, UserLoginSerializer
+    UserRegistrationSerializer, LecturerRegistrationSerializer, SchoolInfoSerializer, UserLoginSerializer
     )
 from datetime import timedelta
 from django.utils import timezone
@@ -56,6 +56,15 @@ class PersonalInfoRegistrationView(APIView):
             serializer.save()
             return Response({'Success': 'Account creation successful'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class LecturerRegistrationView(APIView):
+    def post(self, request, format=None, **kwargs):
+        serializer = LecturerRegistrationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"Success", "Account creation successful"}, status=status.HTTP_201_CREATED)
+    
 
     # def send_registration_email(self, otp_token, email) -> bool:
     #     """
