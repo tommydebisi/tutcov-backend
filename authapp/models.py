@@ -11,7 +11,7 @@ import random
 import string
 from django.utils.text import slugify
 from django.conf import settings
-
+import secrets
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
