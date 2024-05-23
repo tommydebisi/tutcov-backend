@@ -9,7 +9,7 @@ from django.utils.crypto import get_random_string
 from django.core.mail import send_mail, BadHeaderError
 from django.core.cache import cache  # import Django's cache
 
-from authapp.models import User, Token as CustomToken, Profile
+from authapp.models import User, Token as CustomToken, Profile, EmailOTPToken
 from .serializers import (
     UserRegistrationSerializer, LecturerRegistrationSerializer, SchoolInfoSerializer, UserLoginSerializer
     )
@@ -63,7 +63,28 @@ class LecturerRegistrationView(APIView):
         serializer = LecturerRegistrationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({"Success", "Account creation successful"}, status=status.HTTP_201_CREATED)
+        return Response({"Success": "Account creation successful"}, status=status.HTTP_201_CREATED)
+    
+
+class VerifyEmailOTPView(APIView):
+    def post(self, request, email, format=None):
+        serializer = EmailOTPTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        otp_code = serializer.validated_data['otp_code']
+        try: 
+            user = User.objects.get(email=email)
+            user_otp = EmailOTPToken.objects.filter(user=user).last()
+            if user_otp.otp_code == serializer.validated_data["otp_code"]:
+
+                if user_otp.otp_expires_at > timezone.now():
+                    user.is_active= True
+                    user.save()
+                    return Response({"Success": "Email validation successful!"})
+                    
+                return Response({"Error": "The OTP has expired, get a new OTP!!"})
+            return Response({"Error:" "Invalid OTP entered, enter a valid OTP"})
+        except User.DoesNotExist:
+            return Response({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
     
 
     # def send_registration_email(self, otp_token, email) -> bool:

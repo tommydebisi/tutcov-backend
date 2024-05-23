@@ -144,6 +144,24 @@ class Faculty(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+
+class EmailOTPToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="email_otps")
+    otp_code = models.CharField(max_length=4)
+    otp_created_at = models.DateTimeField(auto_now_add=True)
+    otp_expires_at = models.DateTimeField()
+
+    def __str__(self):
+        return self.user.email
+    
+    def save(self, *args, **kwargs):
+        if not self.otp_expires_at:
+            self.otp_expires_at = timezone.now() + timedelta(minutes=5)
+        if not self.otp_code:
+            self.otp_code = '{:04d}'.format(secrets.randbelow(10000))
+            
+        super(EmailOTPToken, self).save(*args, **kwargs)
+
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     image = models.ImageField(default="user.jpg", upload_to="profile_pictures")
