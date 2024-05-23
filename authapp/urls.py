@@ -1,10 +1,11 @@
 from django.urls import path
 from .views import (
-    PersonalInfoRegistrationView, SchoolInfoRegistrationView,UserProfileView,
+    PersonalInfoRegistrationView, LecturerRegistrationView, SchoolInfoRegistrationView,UserProfileView,
     UserLoginView, UserLogoutView, TokenResetView)
 
 urlpatterns = [
-    path('personal-info/', PersonalInfoRegistrationView.as_view(), name='personal-info'),
+    path('signup/student/', PersonalInfoRegistrationView.as_view(), name='personal-info'),
+    path("signup/lecturer/", LecturerRegistrationView.as_view(), name="lecturer"),
     path('school-info/', SchoolInfoRegistrationView.as_view(), name='school-info'),
     path("me/", UserProfileView.as_view(), name="user-profile"),
     path('login/', UserLoginView.as_view(), name='login'),

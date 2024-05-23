@@ -13,10 +13,13 @@ from decouple import config
 from datetime import timedelta
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+# postgres://tutcov_user:0RdsS2TrlF47jK03bBYHi8djODA5x1ez@dpg-cp7niao21fec73dm5d0g-a.oregon-postgres.render.com/tutcov
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -29,7 +32,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-
+# /manage.py spectacular --file schema.yml
 # Application definition
 
 INSTALLED_APPS = [
@@ -45,6 +48,7 @@ INSTALLED_APPS = [
     'channels',
     'rest_framework',
     "drf_spectacular",
+    'drf_yasg',
 ]
 
 REST_FRAMEWORK = {
@@ -149,6 +153,9 @@ DATABASES = {
 }
 
 
+DATABASES['default'] = dj_database_url.parse("postgres://tutcov_user:0RdsS2TrlF47jK03bBYHi8djODA5x1ez@dpg-cp7niao21fec73dm5d0g-a.oregon-postgres.render.com/tutcov")
+
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -230,13 +237,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # APPEND_SLASH=False
 
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+SENDGRID_API_KEY = config("NEW_SENDGRID_API_KEY")
+
 # DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 # EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 # SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 # SENDGRID_API_KEY = config("NEW_SENDGRID_API_KEY")
 
-DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
-EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False
-SENDGRID_API_KEY = config("NEW_SENDGRID_API_KEY")
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = config('MY_EMAIL')
+EMAIL_HOST_PASSWORD = config('MY_PASSWORD')
+EMAIL_PORT = 587
+EMAIL_DEBUG = True
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 

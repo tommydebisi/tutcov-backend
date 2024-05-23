@@ -43,10 +43,13 @@ class OptionsSerializer(serializers.Serializer):
     
 
 class EnrollmentSerializer(serializers.ModelSerializer):
+    course_title = serializers.SerializerMethodField("get_course_title")
     class Meta:
         model = Enrollment
-        fields = '__all__'
+        fields = ['course_title']
 
+    def get_course_title(self, obj):
+        return obj.course.name
 
 class MyEnrollmentSerializer(serializers.ModelSerializer):
     course_name = serializers.SerializerMethodField("get_course_name")

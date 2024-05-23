@@ -11,7 +11,7 @@ from authapp.models import User
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
-from authapp.models import User, Profile
+from authapp.models import User, Profile, Faculty
 
 
 
@@ -29,17 +29,22 @@ class CoursesAPIView(APIView):
     def get(self, request, format=None, **kwargs):
         user = User.objects.get(email=request.user)
         profile_faculty = Profile.objects.get(user=user).faculty
-        print(profile_faculty)
+        profile_department = Profile.objects.get(user=user).department
+        faculty_id = Faculty.objects.get(name=profile_faculty)
         all_enrollments = Enrollment.objects.filter(user=user)
-        all_faculty_courses = Course.objects.filter(faculty=profile_faculty)
-        # all_departmental_courses = Course.objects.filter(faculty=user.profile.faculty, department=user.profile.department)
+        all_faculty_courses = Course.objects.filter(faculty=faculty_id)
+        all_new_courses = Course.objects.filter(tag="New")
+        # print(all_faculty_courses)
+        all_departmental_courses = Course.objects.filter(faculty=faculty_id, department=profile_department)
+        print(all_departmental_courses)
         serialized_all_enrollments = DashboardCoursesSerializer(all_enrollments, many=True)
-        serialized_all_faculty_courses = CoursesSerializer(all_faculty_courses, many=True)
-
-        # serialized_faculty_courses = NewCoursesSerializer(all_faculty_courses)
-        # serialzied_departmental_courses = NewCoursesSerializer(all_departmental_courses)
+        serialized_all_faculty_courses = NewCoursesSerializer(all_faculty_courses, many=True)
+        serialized_departmental_courses = NewCoursesSerializer(all_departmental_courses, many=True)
+        serialized_new_courses = NewCoursesSerializer(all_new_courses, many=True)
         return Response({"Your saved courses" : serialized_all_enrollments.data,
-                         "Your faculty courses": serialized_all_faculty_courses.data}, status=status.HTTP_200_OK)
+                         "Your faculty courses": serialized_all_faculty_courses.data,
+                         "Your departmental courses": serialized_departmental_courses.data,
+                         "All new courses": serialized_new_courses.data}, status=status.HTTP_200_OK)
 
 
 class CourseQuestions(APIView):
@@ -115,11 +120,15 @@ class EnrollStudentAPIView(APIView):
             return Response({"error": "You are already enrolled in this course"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create enrollment
-        enrollment_data = {'user': request.user.id, 'course': course}
-        serializer = EnrollmentSerializer(data=enrollment_data)
+        # enrollment_data = {'user': request.user.id, 'course': course, 'course title': course.name}
+        my_course = Course.objects.get(slug=course_slug)
+        new_enrollment = Enrollment.objects.create(user=request.user, course=my_course)
+        serializer = EnrollmentSerializer(new_enrollment, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        message = {"Success": "You have successfully enrolled for this course"}
+        message.update(dict(serializer.data))
+        return Response(message, status=status.HTTP_201_CREATED)
     
 
 # LOGIC FOR QUIZ
