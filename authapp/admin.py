@@ -14,5 +14,5 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ['user']
-    list_filter = ['level']
+    list_filter = ['user']
 
