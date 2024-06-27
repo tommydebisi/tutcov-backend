@@ -153,7 +153,7 @@ DATABASES = {
 }
 
 
-DATABASES['default'] = dj_database_url.parse("postgres://tutcov_user:0RdsS2TrlF47jK03bBYHi8djODA5x1ez@dpg-cp7niao21fec73dm5d0g-a.oregon-postgres.render.com/tutcov")
+# DATABASES['default'] = dj_database_url.parse("postgres://tutcov_user:0RdsS2TrlF47jK03bBYHi8djODA5x1ez@dpg-cp7niao21fec73dm5d0g-a.oregon-postgres.render.com/tutcov")
 
 
 CACHES = {
