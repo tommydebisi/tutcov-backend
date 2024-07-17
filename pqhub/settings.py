@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from decouple import config
 from datetime import timedelta
 from pathlib import Path
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +29,8 @@ SECRET_KEY = 'django-insecure-njr!v8g1qp09^a-w+e4gucn+!3%qfgt(ag96w^w+@=ytdj+iwb
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+
 
 
 # Application definition
@@ -98,17 +102,29 @@ WSGI_APPLICATION = 'pqhub.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     # db for postgresql
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME'), # name of db
+#         'USER': config('DB_USER'), # user of db
+#         'PASSWORD': config('DB_PASSWORD'), # password of db
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     },
+# }
+
 DATABASES = {
-    # db for postgresql
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'), # name of db
-        'USER': config('DB_USER'), # user of db
-        'PASSWORD': config('DB_PASSWORD'), # password of db
-        'HOST': 'localhost',
-        'PORT': '5432',
-    },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+
+AUTH_USER_MODEL = "tutdb.User"
+
+DATABASES["default"] = dj_database_url.parse("postgresql://tutcov_tli3_user:3Tig0pELsjtyzoTL057FsIV2IHcZwx9l@dpg-cqbun0rv2p9s738pr7c0-a.oregon-postgres.render.com/tutcov_tli3")
+
 
 CACHES = {
     "default": {
@@ -167,14 +183,14 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Mail settings for smtp
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # Specify your SMTP server
-EMAIL_PORT = 587  # Port for sending emails (use 587 for TLS, 465 for SSL)
-EMAIL_USE_TLS = True  # Use TLS (True/False based on your email provider)
-EMAIL_USE_SSL = False  # Use SSL (True/False based on your email provider)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER')  # Sender's email address
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'  # Specify your SMTP server
+# EMAIL_PORT = 587  # Port for sending emails (use 587 for TLS, 465 for SSL)
+# EMAIL_USE_TLS = True  # Use TLS (True/False based on your email provider)
+# EMAIL_USE_SSL = False  # Use SSL (True/False based on your email provider)
+# EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER')  # Sender's email address
 
 APPEND_SLASH=False
 
