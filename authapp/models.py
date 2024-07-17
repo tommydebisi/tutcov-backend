@@ -49,16 +49,25 @@ YEAR = (
     ("500 Level", "500 Level")
 )
 
+FACULTY_CHOICES = (
+    ("Engineering", "Engineering"),
+)
+
+DEPARTMENT_CHOICES = (
+    ("Computer Engineering", "Computer Engineering"),
+    ("Electrical Engineering", "Electrical Engineering")
+)
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=30, unique=True) # I  removed the default
     image = models.ImageField(default="user.jpg", upload_to="profile_pictures")
-    level = models.CharField(max_length=50, blank=True, choices=YEAR)
+    level = models.CharField(max_length=50, choices=YEAR)
     country = models.CharField(max_length=100, default="Nigeria")
-    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE, blank=True, null=True)
+    faculty = models.CharField(choices=FACULTY_CHOICES, max_length=255)
     phone_number = models.CharField(max_length=11)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE, blank=True, null=True)
+    department = models.CharField(choices=DEPARTMENT_CHOICES, max_length=255)
     is_active = models.BooleanField(default=True)
     is_lecturer = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
