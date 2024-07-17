@@ -8,7 +8,7 @@ from django.conf import settings
 
 
 class UserManager(BaseUserManager):
-    def _create_user(self, email, username, password, **extra_fields):
+    def _create_user(self, email, username,  phone_number, faculty, level, department, password, **extra_fields):
         """ 
     Creates and saves a User with the given email,and password. 
 """
@@ -16,7 +16,7 @@ class UserManager(BaseUserManager):
             raise ValueError('The given email must be set')
         try:
             with transaction.atomic():
-                user = self.model(email=email, username=username, **extra_fields)
+                user = self.model(email=email, username=username, phone_number=phone_number, faculty=faculty,  level=level, department=department, **extra_fields)
                 user.set_password(password)
                 user.save(using = self._db)
                 return user
@@ -24,14 +24,14 @@ class UserManager(BaseUserManager):
             raise
 
     
-    def create_user(self, email, username, password=None, **extra_fields):
+    def create_user(self, email, username, phone_number, faculty, level, department, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
-        return self._create_user(email, username, password, **extra_fields)
+        return self._create_user(email, username, phone_number, faculty, level, department, password, **extra_fields)
 
     
     
-    def create_superuser(self, email, username, password, **extra_fields):
+    def create_superuser(self, email, username, phone_number, faculty, level, department, password, **extra_fields):
         extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        return self._create_user(email, username, password=password, **extra_fields)
+        return self._create_user(email, username, phone_number, faculty, level, department, password=password, **extra_fields)

@@ -1,14 +1,26 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from tutdb.models import User
+from tutdb.models import User, Faculty, Department
 from authapp.models import Profile, EmailOTPToken
 from pqhub.backends import CustomUserModelBackend
+
+
+class FacultySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Faculty
+        fields = ['name']
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ["name"]
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'username', 'password')
+        fields = ('email', 'username', 'password',  'phone_number', 'faculty', 'level', 'department')
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_password(self, value):
