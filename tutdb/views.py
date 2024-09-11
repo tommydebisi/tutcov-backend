@@ -1,5 +1,5 @@
 from tutdb.serializers import QuestionSerializer, DashboardCoursesSerializer, CoursesSerializer, NewCoursesSerializer, DashboardSerializer, UpdateQuestionResponseSerializer, UserResponseSerializer, QuestionResponseSerializer, MyEnrollmentSerializer, EnrollmentSerializer, QuestionDetailSerializer, OptionsSerializer
-from .models import Question, UserResponse, Choice, Course, Enrollment, Session
+from .models import Question, User, Profile, UserResponse, Choice, Course, Enrollment, Session
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,11 +7,13 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.generics import ListAPIView
-from authapp.models import User
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
-from authapp.models import User, Profile, Faculty
+from authapp.models import Faculty
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 
@@ -183,7 +185,23 @@ class UpdateQuestionResponseAPIView(APIView):
         new_serializer = UserResponseSerializer(user_responses, many=True)
         return Response(new_serializer.data, status=status.HTTP_200_OK)
 
+
+class ListAllCoursesAPIView(APIView):
+    def get(self, request, format=None, *args, **kwargs):
+        all_courses = Course.objects.all()
+        serializer = NewCoursesSerializer(all_courses, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
+
+class RetrieveveCourseAPIView(APIView):
+    def get(self, request, format=None, *args, **kwargs):
+        slug = kwargs.get("course_slug")
+        print(slug)
+        course = get_object_or_404(Course, slug=slug)
+        serializer = NewCoursesSerializer(course)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
     # def delete(self, request, format=None, **kwargs):
     #     cart_id = kwargs.get("cart_id")
     #     cartitems = Cartitems.objects.filter(cart=cart_id)

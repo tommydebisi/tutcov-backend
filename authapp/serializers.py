@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from tutdb.models import User, Faculty, Department
-from authapp.models import Profile, EmailOTPToken
+from tutdb.models import User
+from .models import Faculty, Department
+from tutdb.models import Profile, EmailOTPToken
 from pqhub.backends import CustomUserModelBackend
 
 
@@ -94,3 +95,10 @@ class EmailOTPTokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailOTPToken
         fields = ["otp_code"]
+
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["email", "username", "image", "country", "phone_number", "department"]

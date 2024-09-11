@@ -3,19 +3,20 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from authapp.serializers import ProfileSerializer, EmailOTPTokenSerializer
+from authapp.serializers import ProfileSerializer, EmailOTPTokenSerializer, UserSerializer
 from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.core.mail import send_mail, BadHeaderError
 from django.core.cache import cache  # import Django's cache
 
-from authapp.models import User, Token as CustomToken, Profile, EmailOTPToken
+from tutdb.models import User, Token as CustomToken, Profile, EmailOTPToken
 from .serializers import (
     UserRegistrationSerializer, LecturerRegistrationSerializer, SchoolInfoSerializer, UserLoginSerializer
     )
 from datetime import timedelta
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema
+from django.shortcuts import get_object_or_404
 
 class PersonalInfoRegistrationView(APIView):
     """
@@ -278,16 +279,16 @@ class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None, **kwargs):
-        user = User.objects.get(email=request.user.email)
-        profile = Profile.objects.get(user=user)
-        serializer = ProfileSerializer(profile)
+        email = request.user.email
+        user = get_object_or_404(User, email=email)
+        serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def put(self, request, format=None, **kwargs):
         """The user gets to view and edit their information on the application."""
-        user = User.objects.get(email=request.user.email)
-        profile = Profile.objects.get(user=user)
-        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        email = request.user.email
+        user = get_object_or_404(User, email=email)
+        serializer = UserSerializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)

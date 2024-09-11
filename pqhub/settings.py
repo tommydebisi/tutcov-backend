@@ -12,14 +12,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from decouple import config
 from datetime import timedelta
 from pathlib import Path
-import os
 import dj_database_url
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# postgres://tutcov_user:0RdsS2TrlF47jK03bBYHi8djODA5x1ez@dpg-cp7niao21fec73dm5d0g-a.oregon-postgres.render.com/tutcov
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -30,9 +28,11 @@ SECRET_KEY = 'django-insecure-njr!v8g1qp09^a-w+e4gucn+!3%qfgt(ag96w^w+@=ytdj+iwb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["tutcov.onrender.com", "localhost", "127.0.0.1"]
 
-# /manage.py spectacular --file schema.yml
+
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,52 +42,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tutdb.apps.TutdbConfig',
+    'tutdb',
     'authapp',
-    'chat',
-    'channels',
     'rest_framework',
-    "drf_spectacular",
-    'drf_yasg',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema", # new
-    # 'DEFAULT_THROTTLE_CLASSES': [
-    #     'tutdb.throttles.CustomUserRateThrottle',
-    #     'rest_framework.throttling.UserRateThrottle'
-    # ],
-    # 'DEFAULT_THROTTLE_RATES': {
-    #     'anon': '100/day',
-    #     'user': '100/day'
-    # },
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 2
 }
-
-
-SPECTACULAR_SETTINGS = {
-"TITLE": "TUTCOV API Project",
-"DESCRIPTION": "A comprehensive documentation on all endpoints in tutcov",
-"VERSION": "1.0.0",
-# OTHER SETTINGS
-}
-
-
-
-
-ASGI_APPLICATION = 'pqhub.asgi.application'
-
 
 AUTHENTICATION_BACKENDS = [
     'pqhub.backends.CustomUserModelBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-
-AUTH_USER_MODEL = "authapp.User"
 
 
 SIMPLE_JWT = {
@@ -107,6 +76,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'pqhub.urls'
@@ -152,8 +122,12 @@ DATABASES = {
     }
 }
 
+database_url = config("DATABASE_URL")
 
-# DATABASES['default'] = dj_database_url.parse("postgres://tutcov_user:0RdsS2TrlF47jK03bBYHi8djODA5x1ez@dpg-cp7niao21fec73dm5d0g-a.oregon-postgres.render.com/tutcov")
+DATABASES["default"] = dj_database_url.parse(database_url)
+
+AUTH_USER_MODEL = "tutdb.User"
+
 
 
 CACHES = {
@@ -165,15 +139,6 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
     }
-}
-
-CHANNEL_LAYERS = {
-    'default': {
-    'BACKEND': 'channels_redis.core.RedisChannelLayer',
-    'CONFIG': {
-    'hosts': [('127.0.0.1', 6379)],
-    },
-    },
 }
 
 
@@ -218,8 +183,8 @@ STATIC_URL = 'static/'
 
 MEDIA_URL = "media/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -235,12 +200,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 # DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER')  # Sender's email address
 
-# APPEND_SLASH=False
-
-DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
-EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False
-SENDGRID_API_KEY = config("NEW_SENDGRID_API_KEY")
+APPEND_SLASH=False
 
 # DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 # EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
@@ -248,13 +208,7 @@ SENDGRID_API_KEY = config("NEW_SENDGRID_API_KEY")
 # SENDGRID_API_KEY = config("NEW_SENDGRID_API_KEY")
 
 
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = config('MY_EMAIL')
-EMAIL_HOST_PASSWORD = config('MY_PASSWORD')
-EMAIL_PORT = 587
-EMAIL_DEBUG = True
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"

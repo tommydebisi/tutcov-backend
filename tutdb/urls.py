@@ -1,8 +1,10 @@
 from django.urls import path
-from .views import QuestionListApiView, CoursesAPIView, DashboardView, ListStudentEnrollment, QuestionDetailAPIView, CourseQuestions, UpdateQuestionResponseAPIView, QuestionResponseCreateAPIView,EnrollStudentAPIView
+from .views import QuestionListApiView, RetrieveveCourseAPIView, CoursesAPIView, DashboardView, ListStudentEnrollment, QuestionDetailAPIView, CourseQuestions, UpdateQuestionResponseAPIView, QuestionResponseCreateAPIView,EnrollStudentAPIView, ListAllCoursesAPIView
 
 
 urlpatterns = [
+    path("courses/all/", ListAllCoursesAPIView.as_view(), name="list-all-courses"),
+    path("courses/<slug:course_slug>/", RetrieveveCourseAPIView.as_view(), name="list-single-course"),
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("dashboard/courses/", CoursesAPIView.as_view(), name="dashboard-courses"),
     path("questions/all/", QuestionListApiView.as_view(), name="all-questions"),
