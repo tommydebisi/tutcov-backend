@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from tutdb.models import Question, Session, Course, Enrollment, UserResponse, Choice
-from authapp.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class QuestionSerializer(serializers.ModelSerializer):
     options = serializers.SerializerMethodField("get_all_options")

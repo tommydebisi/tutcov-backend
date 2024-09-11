@@ -1,18 +1,11 @@
 from django.contrib import admin
-from .models import User, Profile, Department, Faculty
+from tutdb.models import User, Token
+
+admin.site.register(User)
+
+# class TokenAdmin(admin.ModelAdmin):
+#     list_display = ["user", "created_at", "access_token_expires_at"]
+#     list_filter = ["user"]
 
 
-admin.site.register([Department, Faculty])
-
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'is_active', 'is_superuser']
-    list_filter  = ['is_active']
-    search_fields = ["username", "email"]
-
-
-@admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['user']
-    list_filter = ['user']
-
+# admin.site.register(Token, TokenAdmin)

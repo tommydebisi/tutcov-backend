@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import User, Course, Choice,Enrollment, UserResponse, Session, Question, Department, Faculty
-from authapp.models import Token
+from tutdb.models import Token
 
 admin.site.register(Choice)
 
@@ -52,7 +52,7 @@ class SessionAdmin(admin.ModelAdmin):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ['question', 'question_number']
+    list_display = ['question', 'question_number', 'answer']
     list_filter = ['question_number']
     search_fields = ['question', 'question_number']
-    list_editable = ['question_number']
+    list_editable = ['question_number', 'answer']
